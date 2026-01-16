@@ -1,14 +1,15 @@
 import "./global.css";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "@/components/ui/use-toast";
 
 import { CartProvider } from "@/lib/cart";
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider, useAuth } from "@/lib/auth";
 
 import Preloader from "@/components/Preloader";
 
@@ -31,6 +32,9 @@ function AppRoutes() {
   const [loading, setLoading] = useState(true);
   const firstLoad = useRef(true);
 
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
@@ -42,8 +46,32 @@ function AppRoutes() {
       timer = setTimeout(() => setLoading(false), 1200);
     }
 
+    // Handle Supabase Auth Redirects (Email Verification, Password Reset)
+    if (location.hash) {
+      const params = new URLSearchParams(location.hash.substring(1));
+      const type = params.get("type");
+      const accessToken = params.get("access_token");
+
+      if (accessToken && user) {
+        if (type === "signup") {
+          toast({
+            title: "Email Verified",
+            description: "Your email has been successfully verified. Welcome!"
+          });
+          navigate("/profile", { replace: true });
+        } else if (type === "recovery") {
+          toast({
+            title: "Password Reset",
+            description: "Please set a new password."
+          });
+          // navigate("/reset-password", { replace: true }); // Future implementation
+          navigate("/profile", { replace: true });
+        }
+      }
+    }
+
     return () => clearTimeout(timer);
-  }, [location]);
+  }, [location, user, navigate]);
 
   return (
     <>
