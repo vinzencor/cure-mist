@@ -43,6 +43,9 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: "https://cure-mist.vercel.app/",
+        }
       });
 
       if (error) {

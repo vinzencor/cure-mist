@@ -33,7 +33,7 @@ export default function Register() {
             email,
             password,
             options: {
-                emailRedirectTo: `${window.location.origin}/`,
+                emailRedirectTo: "https://cure-mist.vercel.app/",
             }
         });
 
