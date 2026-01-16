@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase, getAuthRedirectUrl } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ export default function Register() {
             email,
             password,
             options: {
-                emailRedirectTo: "https://cure-mist.vercel.app/",
+                emailRedirectTo: getAuthRedirectUrl(),
             }
         });
 
