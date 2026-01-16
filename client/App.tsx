@@ -23,6 +23,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 
+// Admin Components
+import AdminLayout from "@/components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminOrders from "./pages/admin/Orders";
+import AdminUsers from "./pages/admin/Users";
+import AdminLogin from "./pages/admin/Login";
+
 const queryClient = new QueryClient();
 
 /* ---------------- ROUTE WRAPPER ---------------- */
@@ -86,6 +93,16 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="users" element={<AdminUsers />} />
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

@@ -72,19 +72,19 @@ export default function Header() {
         {/* Right Actions */}
         <div className="flex items-center gap-2 md:gap-6 justify-end flex-shrink-0">
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
-            <span className="text-brand-blue text-sm font-bold">Made by Scientists</span>
+            <span className="text-black text-sm font-bold">Made by Scientists</span>
           </div>
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
-            <span className="text-brand-blue text-sm font-bold">AYUSH approved</span>
+            <span className="text-black text-sm font-bold">AYUSH approved</span>
           </div>
-          <Link to="/blog" className="hidden md:flex items-center text-brand-blue text-xs md:text-sm font-semibold hover:opacity-80">
+          <Link to="/blog" className="hidden md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80">
             BLOG
           </Link>
           {/* Profile Button / Login */}
           {!user ? (
             <button
               onClick={toggleProfilePopup}
-              className="flex items-center gap-0.5 text-brand-blue text-xs md:text-sm font-medium hover:opacity-80 flex-shrink-0"
+              className="flex items-center gap-0.5 text-black text-xs md:text-sm font-medium hover:opacity-80 flex-shrink-0"
             >
               <User className="w-4 h-5 md:w-[17px] md:h-[22px] flex-shrink-0" />
               <span className="text-xs md:text-sm">Login</span>
@@ -93,11 +93,11 @@ export default function Header() {
             <div className="flex items-center gap-1 md:gap-3 relative flex-shrink-0" ref={profileMenuRef}>
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-0.5 md:gap-2 text-brand-blue text-xs md:text-sm font-medium hover:opacity-80"
+                className="flex items-center gap-0.5 md:gap-2 text-black text-xs md:text-sm font-medium hover:opacity-80"
               >
                 <Avatar className="w-7 h-7 md:w-10 md:h-10">
                   <AvatarFallback
-                    className="bg-brand-yellow text-brand-blue font-bold text-xs md:text-sm border-2 border-brand-blue rounded-full w-full h-full flex items-center justify-center box-border"
+                    className="bg-brand-yellow text-black font-bold text-xs md:text-sm border-2 border-black rounded-full w-full h-full flex items-center justify-center box-border"
                   >
                     {user?.email?.slice(0, 1).toUpperCase()}
                   </AvatarFallback>
@@ -110,7 +110,7 @@ export default function Header() {
                 <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <Link
                     to="/profile"
-                    className="flex items-center gap-3 px-4 py-3 text-brand-blue text-sm font-medium hover:bg-brand-yellow rounded-t-lg transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 text-black text-sm font-medium hover:bg-brand-yellow rounded-t-lg transition-colors"
                     onClick={() => setShowProfileMenu(false)}
                   >
                     <Settings className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function Header() {
               )}
             </div>
           )}
-          <Link to="/cart" className="flex items-center gap-1 text-brand-blue text-xs md:text-sm font-medium hover:opacity-80 flex-shrink-0">
+          <Link to="/cart" className="flex items-center gap-1 text-black text-xs md:text-sm font-medium hover:opacity-80 flex-shrink-0">
             <ShoppingCart className="w-5 h-4 md:w-[26px] md:h-[23px]" />
             <span className="text-xs md:text-sm"><CartCount /></span>
           </Link>
