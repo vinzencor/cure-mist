@@ -7,7 +7,7 @@ interface ProductCardProps {
   title: string;
   size: string;
   price: string;
-  originalPrice: string;
+  originalPrice?: string;
   discount: string;
   image: string;
   benefit?: string;
@@ -67,7 +67,7 @@ export default function ProductCard({ title, size, price, originalPrice, discoun
         <span className="text-black text-[28px] font-bold">{price}</span>
       </div>
       <div className="mb-4">
-        <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>
+        {originalPrice && <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>}
       </div>
 
       {/* Action Buttons */}

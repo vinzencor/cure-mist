@@ -5,6 +5,14 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const tabs = ['Profile Information', 'Order History', 'Saved Cards', 'Address Information'] as const;
 
@@ -36,7 +44,11 @@ export default function Profile() {
 
   // Password Change State
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingPass, setLoadingPass] = useState(false);
+
+  // Delete Profile State
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -101,6 +113,24 @@ export default function Profile() {
     setLoadingProfile(false);
   };
 
+  const handleDeleteProfile = async () => {
+    if (!user) return;
+
+    // Note: Deleting from 'auth.users' requires service role or admin API. 
+    // Here we delete the public profile data and sign out.
+    // If cascade delete is set up in Supabase, this might clear related data.
+
+    const { error } = await supabase.from('profiles').delete().eq('id', user.id);
+
+    if (error) {
+      toast({ title: "Error deleting profile", description: error.message, variant: "destructive" });
+    } else {
+      await signOut();
+      toast({ title: "Profile deleted", description: "Your profile information has been removed." });
+      navigate("/");
+    }
+  };
+
   const handleSetDefaultAddress = async (addressId: string) => {
     const { error } = await supabase.from('profiles').upsert({
       id: user!.id,
@@ -147,6 +177,12 @@ export default function Profile() {
 
   const handleUpdatePassword = async () => {
     if (!newPassword) return;
+
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+
     setLoadingPass(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setLoadingPass(false);
@@ -156,6 +192,7 @@ export default function Profile() {
     } else {
       toast({ title: "Password updated successfully" });
       setNewPassword("");
+      setConfirmPassword("");
     }
   };
 
@@ -210,10 +247,30 @@ export default function Profile() {
                         {firstName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="w-full max-w-xs text-center">
+                    <div className="w-full max-w-xs text-center flex flex-col items-center gap-2">
                       <label htmlFor="avatar-upload" className="text-xs font-semibold text-brand-blue cursor-pointer bg-brand-yellow px-3 py-1 rounded hover:bg-[#816306] hover:text-[#311659] transition-colors">
                         {loadingProfile ? "Uploading..." : "Upload Photo"}
                       </label>
+                      {avatarUrl && (
+                        <button
+                          onClick={async () => {
+                            if (!confirm("Remove profile photo?")) return;
+                            setLoadingProfile(true);
+                            const { error } = await supabase.from('profiles').update({ avatar_url: null }).eq('id', user.id);
+                            if (error) {
+                              toast({ title: "Error removing photo", description: error.message, variant: "destructive" });
+                            } else {
+                              setAvatarUrl("");
+                              toast({ title: "Photo removed" });
+                            }
+                            setLoadingProfile(false);
+                          }}
+                          className="text-xs text-red-500 hover:text-red-700 underline"
+                          disabled={loadingProfile}
+                        >
+                          Remove Photo
+                        </button>
+                      )}
                       <input
                         id="avatar-upload"
                         type="file"
@@ -309,11 +366,52 @@ export default function Profile() {
                         onChange={e => setNewPassword(e.target.value)}
                       />
                     </div>
+                    <div className="flex flex-col">
+                      <label className="font-medium mb-1">Confirm Password</label>
+                      <input
+                        className="border p-3 rounded"
+                        placeholder="Confirm Password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
                     <Button onClick={handleUpdatePassword} disabled={loadingPass} className="bg-brand-yellow text-brand-blue font-bold">
                       {loadingPass ? "UPDATING..." : "UPDATE PASSWORD"}
                     </Button>
                   </div>
                 </div>
+
+                {/* Delete Profile Section */}
+                <div className="mt-8 pt-6 border-t flex justify-end">
+                  <Button
+                    onClick={() => setShowDeleteDialog(true)}
+                    variant="destructive"
+                    className="text-white hover:bg-red-600"
+                  >
+                    DELETE PROFILE
+                  </Button>
+                </div>
+
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Delete Profile?</DialogTitle>
+                      <DialogDescription>
+                        This action cannot be undone. This will permanently delete your profile information and saved addresses.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2 sm:gap-0">
+                      <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                        Cancel
+                      </Button>
+                      <Button variant="destructive" onClick={handleDeleteProfile}>
+                        Yes, Delete My Profile
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
               </div>
             )}
 

@@ -15,7 +15,7 @@ interface ProductDetailsSheetProps {
   title: string;
   size: string;
   price: string; // e.g. "₹160"
-  originalPrice: string; // e.g. "₹168"
+  originalPrice?: string; // e.g. "₹168"
   discountText: string; // e.g. "5% Off"
   image: string;
   benefit?: string;
@@ -23,7 +23,7 @@ interface ProductDetailsSheetProps {
   description?: string;
 }
 
-const parseNumber = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
+const parseNumber = (s?: string) => s ? (Number(s.replace(/[^\d]/g, "")) || 0) : 0;
 
 export default function ProductDetailsSheet({
   title,
@@ -41,7 +41,7 @@ export default function ProductDetailsSheet({
 
   const numericPrice = parseNumber(price);
   const numericOriginal = parseNumber(originalPrice);
-  const discountAmount = numericOriginal - numericPrice;
+  const discountAmount = numericOriginal > numericPrice ? numericOriginal - numericPrice : 0;
   const total = numericPrice * qty;
 
   const dec = () => setQty((q) => Math.max(1, q - 1));
@@ -112,7 +112,7 @@ export default function ProductDetailsSheet({
             const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
             const numPrice = Number(price.replace(/[^\d]/g, "")) || 0;
             addItem({ id: slug, title, image, price: numPrice, quantity: qty, size }, qty);
-            try { toast({ title: "Added to cart" }); } catch {}
+            try { toast({ title: "Added to cart" }); } catch { }
           }} className="w-full bg-brand-yellow hover:bg-brand-yellow/90 text-brand-blue px-6 py-4 rounded-md text-sm font-bold mt-2">ADD TO CART</button>
         </SheetFooter>
 

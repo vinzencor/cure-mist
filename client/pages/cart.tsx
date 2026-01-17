@@ -7,8 +7,10 @@ import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 export default function CartPage() {
   const { items, count, updateQty, removeItem, clearCart, subtotal } = useCart();
   const [coupon, setCoupon] = useState("");
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponDiscount, setCouponDiscount] = useState(0); // Renamed from discountAmount for clarity
   const navigate = useNavigate();
+
+  const memberDiscount = Math.round(subtotal * 0.05);
 
   const applyCoupon = async () => {
     if (!coupon.trim()) return;
@@ -22,18 +24,18 @@ export default function CartPage() {
 
     if (data) {
       if (data.discount_percentage) {
-        setDiscountAmount(Math.round(subtotal * data.discount_percentage));
+        setCouponDiscount(Math.round(subtotal * data.discount_percentage));
       } else if (data.discount_amount) {
-        setDiscountAmount(data.discount_amount);
+        setCouponDiscount(data.discount_amount);
       }
       alert("Coupon applied!");
     } else {
-      setDiscountAmount(0);
+      setCouponDiscount(0);
       alert("Invalid coupon code");
     }
   };
 
-  const totalPayable = subtotal - discountAmount;
+  const totalPayable = subtotal - memberDiscount - couponDiscount;
 
 
   return (
@@ -102,12 +104,22 @@ export default function CartPage() {
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
             </div>
-            <div className="flex justify-between mb-4 text-sm">
-              <span>Discount</span>
-              <span>-₹{discountAmount}</span>
+
+            {/* Member Discount */}
+            <div className="flex justify-between mb-2 text-sm text-green-600 font-medium">
+              <span>Member Discount (5%)</span>
+              <span>-₹{memberDiscount}</span>
             </div>
 
-            <div className="mb-4">
+            {/* Coupon Discount */}
+            {couponDiscount > 0 && (
+              <div className="flex justify-between mb-4 text-sm text-green-600 font-medium">
+                <span>Coupon Discount</span>
+                <span>-₹{couponDiscount}</span>
+              </div>
+            )}
+
+            <div className="mb-4 mt-4 border-t pt-4">
               <label className="block text-sm font-medium mb-2">Coupon</label>
               <div className="flex gap-2">
                 <input value={coupon} onChange={(e) => setCoupon(e.target.value)} className="flex-1 border px-3 py-2 rounded text-sm" placeholder="Enter coupon code" />
@@ -115,9 +127,9 @@ export default function CartPage() {
               </div>
             </div>
 
-            <div className="flex justify-between items-center border-t pt-4 mt-4">
+            <div className="flex justify-between items-center border-t pt-4 mt-2">
               <span className="font-bold text-base md:text-lg">Total</span>
-              <span className="font-bold text-base md:text-lg">₹{totalPayable}</span>
+              <span className="font-bold text-base md:text-lg">₹{totalPayable > 0 ? totalPayable : 0}</span>
             </div>
 
             <button

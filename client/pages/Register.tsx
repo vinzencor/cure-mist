@@ -13,6 +13,7 @@ export default function Register() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -46,13 +47,36 @@ export default function Register() {
                 variant: "destructive",
             });
         } else {
+            setRegistrationSuccess(true);
             toast({
                 title: "Success",
-                description: "Registration successful! You are now logged in.",
+                description: "Registration successful! Please confirm your email.",
             });
-            navigate("/");
         }
     };
+
+    if (registrationSuccess) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-[110px] pb-10 px-4">
+                <Card className="w-full max-w-md text-center py-10 px-6">
+                    <div className="flex justify-center mb-6">
+                        <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="h-12 w-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <CardTitle className="text-2xl font-bold mb-2">Registration Successful</CardTitle>
+                    <CardDescription className="text-gray-600 text-lg mb-6">
+                        Please confirm your email to login.
+                    </CardDescription>
+                    <Button onClick={() => navigate("/login")} className="w-full bg-brand-blue hover:bg-brand-blue/90">
+                        Go to Login
+                    </Button>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-[110px] pb-10 px-4">

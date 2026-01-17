@@ -9,6 +9,7 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -51,15 +52,49 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
       if (error) {
         toast({ title: "Registration Failed", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Registration successful! You are logged in." });
-        onClose();
+        setRegistrationSuccess(true);
+        toast({ title: "Success", description: "Registration successful! Please confirm your email." });
       }
     }
     setLoading(false);
   };
 
+  if (registrationSuccess) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative text-center">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-xl font-bold text-gray-500 hover:text-black"
+          >
+            &times;
+          </button>
+          <div className="flex justify-center mb-6 mt-4">
+            <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center">
+              <svg className="h-12 w-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold mb-2 text-gray-900">Registration Successful</h2>
+          <p className="text-gray-600 text-lg mb-6">
+            Please confirm your email to login.
+          </p>
+          <button onClick={() => {
+            setRegistrationSuccess(false);
+            setIsLogin(true);
+            // onClose(); // Optional: close or switch to login
+          }} className="w-full bg-[#FAFAFA] border border-gray-200 text-gray-900 px-4 py-2 rounded font-semibold hover:bg-gray-100">
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+      {/* ... rest of the form ... */}
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
         <button
           onClick={onClose}

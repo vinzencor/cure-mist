@@ -131,12 +131,17 @@ export default function Checkout() {
     });
   };
 
-  // Tax and Shipping Calculation
+  // Tax, Discount and Shipping Calculation
   // GST is already included in the product price, so we extract it for display purposes only
   const gstRate = 0.18; // 18% GST
   const gstAmount = Math.round(subtotal * (gstRate / (1 + gstRate))); // Extract GST from the inclusive subtotal
   const shippingFee = subtotal > 500 ? 0 : 100;
-  const totalPrice = subtotal + shippingFee; // No additional GST since it's already in the subtotal
+
+  // Member Discount (Simulating the logic from Cart)
+  // NOTE: Ideally this should be centralized in useCart, but for now reproducing logic here for display accuracy.
+  const memberDiscount = Math.round(subtotal * 0.05);
+
+  const totalPrice = subtotal - memberDiscount + shippingFee;
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,6 +214,7 @@ export default function Checkout() {
         shipping_fee: shippingFee,
         gst_amount: gstAmount,
         total_price: totalPrice,
+        discount_amount: memberDiscount, // Recording discount
         payment_status: 'paid', // Simulating successful payment
         order_status: 'processing'
       }).select().single();
@@ -643,6 +649,11 @@ export default function Checkout() {
               <div className="flex justify-between text-gray-600">
                 <span>GST Included (18%)</span>
                 <span>₹{gstAmount}</span>
+              </div>
+              {/* Member Discount Display */}
+              <div className="flex justify-between text-green-600 font-medium">
+                <span>Member Discount (5%)</span>
+                <span>-₹{memberDiscount}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>

@@ -111,6 +111,33 @@ export default function AdminOrders() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
+                <Button variant="outline" onClick={() => {
+                    const headers = ["Order ID", "Date", "Customer Name", "Email", "Phone", "Total", "Status", "Shipping Address"];
+                    const csvContent = [
+                        headers.join(","),
+                        ...orders.map(o => [
+                            o.id,
+                            new Date(o.created_at).toLocaleDateString(),
+                            `${o.customer_info?.firstName} ${o.customer_info?.lastName}`,
+                            o.customer_info?.email,
+                            o.customer_info?.phone,
+                            o.total_price,
+                            o.order_status,
+                            `"${o.shipping_address?.street}, ${o.shipping_address?.city}, ${o.shipping_address?.zip}"`
+                        ].join(","))
+                    ].join("\n");
+
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `orders_export_${new Date().toISOString().slice(0, 10)}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }}>
+                    Download CSV
+                </Button>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by Status" />
