@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
     Table,
     TableBody,
@@ -111,32 +113,66 @@ export default function AdminOrders() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <Button variant="outline" onClick={() => {
-                    const headers = ["Order ID", "Date", "Customer Name", "Email", "Phone", "Total", "Status", "Shipping Address"];
-                    const csvContent = [
-                        headers.join(","),
-                        ...orders.map(o => [
-                            o.id,
-                            new Date(o.created_at).toLocaleDateString(),
-                            `${o.customer_info?.firstName} ${o.customer_info?.lastName}`,
-                            o.customer_info?.email,
-                            o.customer_info?.phone,
-                            o.total_price,
-                            o.order_status,
-                            `"${o.shipping_address?.street}, ${o.shipping_address?.city}, ${o.shipping_address?.zip}"`
-                        ].join(","))
-                    ].join("\n");
+                <Button variant="outline" onClick={async () => {
+                    const { data: ordersWithItems, error } = await supabase
+                        .from('orders')
+                        .select('*, order_items(*)')
+                        .order('created_at', { ascending: false });
 
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", `orders_export_${new Date().toISOString().slice(0, 10)}.csv`);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    if (error) {
+                        toast({ title: "Export Failed", description: error.message, variant: "destructive" });
+                        return;
+                    }
+
+                    const doc = new jsPDF();
+
+                    const tableRows: any[] = [];
+
+                    ordersWithItems?.forEach(order => {
+                        const orderDate = new Date(order.created_at).toLocaleDateString();
+                        const customer = `${order.customer_info?.firstName} ${order.customer_info?.lastName}\n${order.customer_info?.email}\n${order.customer_info?.phone}`;
+                        const address = `${order.shipping_address?.street}, ${order.shipping_address?.city}, ${order.shipping_address?.zip}`;
+
+                        // Main Order Row
+                        tableRows.push([
+                            order.id,
+                            orderDate,
+                            customer,
+                            'Order Summary', // Item placeholder for main row
+                            '-', // Qty
+                            order.order_status,
+                            `Rs. ${order.total_price}`
+                        ]);
+
+                        // Detail Rows for Items
+                        if (order.order_items && order.order_items.length > 0) {
+                            order.order_items.forEach((item: any) => {
+                                tableRows.push([
+                                    '', // ID
+                                    '', // Date
+                                    '', // Customer
+                                    `  - ${item.title}`, // Indented Item
+                                    item.quantity,
+                                    '', // Status
+                                    `Rs. ${item.price}` // Price
+                                ]);
+                            });
+                        }
+                    });
+
+                    autoTable(doc, {
+                        head: [['Order ID', 'Date', 'Customer Info', 'Item / Details', 'Qty', 'Status', 'Total/Price']],
+                        body: tableRows,
+                        startY: 20,
+                        styles: { fontSize: 8, cellPadding: 2 },
+                        headStyles: { fillColor: [75, 0, 130] }, // Purple header
+                        alternateRowStyles: { fillColor: [245, 245, 245] },
+                    });
+
+                    doc.text("All Orders Detailed Report", 14, 15);
+                    doc.save(`orders_report_${new Date().toISOString().slice(0, 10)}.pdf`);
                 }}>
-                    Download CSV
+                    Download PDF Report
                 </Button>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-[180px]">

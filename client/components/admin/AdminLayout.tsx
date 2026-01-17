@@ -7,7 +7,8 @@ import {
     Users,
     LogOut,
     Menu,
-    X
+    X,
+    Ticket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
@@ -39,6 +40,7 @@ export default function AdminLayout() {
         { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
         { icon: ShoppingBag, label: 'Orders', path: '/admin/orders' },
         { icon: Users, label: 'Users', path: '/admin/users' },
+        { icon: Ticket, label: 'Coupons', path: '/admin/coupons' },
     ];
 
     const handleSignOut = async () => {
