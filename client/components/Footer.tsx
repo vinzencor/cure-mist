@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Logo and Address */}
           <div>
             <img
-              src="/public/Logo.png"
+              src="https://cure-mist.vercel.app/Logo.png"
               className="h-[50px] md:h-[62px] w-auto mb-4 md:mb-6"
             />
             <div className="space-y-2">
@@ -22,10 +22,8 @@ export default function Footer() {
               </p>
             </div>
           </div>
-
           {/* Spacer */}
           <div className="hidden lg:block"></div>
-
           {/* Contact Information */}
           <div className="space-y-4 md:space-y-6">
             <div className="flex items-center gap-3 md:gap-4">
@@ -61,10 +59,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
         {/* Divider */}
         <div className="h-px bg-[#BE8F00] mb-6 md:mb-8"></div>
-
         {/* Copyright */}
         <div className="text-center">
           <p className="text-sm md:text-lg font-medium text-black">
@@ -72,7 +68,6 @@ export default function Footer() {
           </p>
         </div>
       </div>
-
       {/* WhatsApp Button */}
       <a
         href="https://wa.me/918848815296"

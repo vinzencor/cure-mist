@@ -73,7 +73,7 @@ export default function Header() {
         {/* Logo */}
         <Link to="/" className="flex items-center flex-shrink-0">
           <img
-            src="/public/Logo.png"
+            src="https://cure-mist.vercel.app/Logo.png"
             className="h-[35px] md:h-[62px] w-auto"
           />
         </Link>
