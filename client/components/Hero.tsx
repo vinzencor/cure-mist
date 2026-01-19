@@ -51,7 +51,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative mt-0 md:mt-0 min-h-[50vh] md:h-[650px] overflow-hidden">
+    <section className="relative pt-[80px] min-h-[calc(100vh-80px)] overflow-hidden">
       {/* Carousel Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         {BANNERS.map((banner, index) => (
@@ -81,7 +81,7 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-4 md:gap-4 h-full items-center py-8 md:py-0">
           {/* Left Content (Remains the Same for All Banners) */}
           <div className="space-y-4 md:space-y-6 pt-4 md:pt-12 lg:pt-0">
-            <h1 className="text-3xl md:text-xl sm:text-4xl lg:text-5xl font-bold text-brand-blue leading-tight">
+            <h1 className="text-3xl md:text-xl sm:text-4xl lg:text-5xl mt-14 font-bold text-brand-blue leading-tight">
               {BANNERS[currentBanner].title}
             </h1>
             <h3 className="text-sm sm:text-lg md:text-xl lg:text-3xl font-medium text-black mx-auto">

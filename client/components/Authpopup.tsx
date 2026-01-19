@@ -109,10 +109,21 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2 text-gray-900">Registration Successful</h2>
-          <p className="text-gray-600 text-lg mb-6">
-            Please confirm your email to login.
+          <h2 className="text-2xl font-bold mb-3 text-gray-900">Registration Successful! 🎉</h2>
+          <p className="text-gray-700 text-base mb-3">
+            We've sent a confirmation email to <strong className="text-purple-900">{email}</strong>
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+            <p className="text-sm text-gray-700 mb-2">
+              <strong>📧 Check your email inbox</strong>
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              Click the confirmation link in the email to activate your account.
+            </p>
+            <p className="text-xs text-gray-500">
+              💡 <strong>Tip:</strong> If you don't see the email, please check your spam or junk folder.
+            </p>
+          </div>
           <button onClick={() => {
             setRegistrationSuccess(false);
             setView('login');

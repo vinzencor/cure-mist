@@ -66,10 +66,21 @@ export default function Register() {
                             </svg>
                         </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold mb-2">Registration Successful</CardTitle>
-                    <CardDescription className="text-gray-600 text-lg mb-6">
-                        Please confirm your email to login.
+                    <CardTitle className="text-2xl font-bold mb-4">Registration Successful! 🎉</CardTitle>
+                    <CardDescription className="text-gray-700 text-base mb-4">
+                        We've sent a confirmation email to <strong className="text-brand-blue">{email}</strong>
                     </CardDescription>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                        <p className="text-sm text-gray-700 mb-2">
+                            <strong>📧 Check your email inbox</strong>
+                        </p>
+                        <p className="text-sm text-gray-600 mb-2">
+                            Click the confirmation link in the email to activate your account.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                            💡 <strong>Tip:</strong> If you don't see the email, please check your spam or junk folder.
+                        </p>
+                    </div>
                     <Button onClick={() => navigate("/login")} className="w-full bg-brand-blue hover:bg-brand-blue/90">
                         Go to Login
                     </Button>

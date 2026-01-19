@@ -48,24 +48,32 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white">
       {/* Top Scrolling Banner */}
       <div className="bg-brand-blue h-[50px] overflow-hidden relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="flex animate-scroll whitespace-nowrap">
-            <span className="text-white text-sm font-medium tracking-wider px-4">
-              Instant Protection • Faster Healing • 100% Ayurvedic Care •
-            </span>
-            <span className="text-white text-sm font-medium tracking-wider px-4">
-              Instant Protection • Faster Healing • 100% Ayurvedic Care •
-            </span>
-          </div>
-        </div>
+    <div className="absolute inset-0 flex items-center">
+    <div className="marquee-track">
+      <div className="marquee-content">
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
       </div>
+
+      {/* DUPLICATE for seamless loop */}
+      <div className="marquee-content">
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+        <span>Instant Protection • Faster Healing • 100% Ayurvedic Care •</span>
+      </div>
+    </div>
+    </div>
+   </div>
+
       {/* Main Navigation */}
       <div className="bg-brand-yellow h-[60px] md:h-[95px] flex items-center justify-between px-3 md:px-6 lg:px-24">
         {/* Logo */}
         <Link to="/" className="flex items-center flex-shrink-0">
           <img
-            src="https://api.builder.io/api/v1/image/assets/TEMP/be98dd27d5fc46f36a990500215b312b985d0f4e?width=380"
-            alt="Cure Mist Logo"
+            src="/public/Logo.png"
             className="h-[35px] md:h-[62px] w-auto"
           />
         </Link>

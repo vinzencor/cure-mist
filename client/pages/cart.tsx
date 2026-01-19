@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/lib/supabase";
@@ -8,9 +8,28 @@ export default function CartPage() {
   const { items, count, updateQty, removeItem, clearCart, subtotal } = useCart();
   const [coupon, setCoupon] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0); // Renamed from discountAmount for clarity
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
+  const [showCoupons, setShowCoupons] = useState(false);
   const navigate = useNavigate();
 
   const memberDiscount = Math.round(subtotal * 0.05);
+
+  // Fetch available coupons on component mount
+  useEffect(() => {
+    fetchAvailableCoupons();
+  }, []);
+
+  const fetchAvailableCoupons = async () => {
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (data && !error) {
+      setAvailableCoupons(data);
+    }
+  };
 
   const applyCoupon = async () => {
     if (!coupon.trim()) return;
@@ -120,7 +139,56 @@ export default function CartPage() {
             )}
 
             <div className="mb-4 mt-4 border-t pt-4">
-              <label className="block text-sm font-medium mb-2">Coupon</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium">Coupon Code</label>
+                {availableCoupons.length > 0 && (
+                  <button
+                    onClick={() => setShowCoupons(!showCoupons)}
+                    className="text-xs text-brand-blue hover:underline font-medium"
+                  >
+                    {showCoupons ? 'Hide' : 'View Available Coupons'}
+                  </button>
+                )}
+              </div>
+
+              {/* Available Coupons Display */}
+              {showCoupons && availableCoupons.length > 0 && (
+                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs font-semibold text-gray-700 mb-2">🎉 Available Coupons:</p>
+                  <div className="space-y-2">
+                    {availableCoupons.map((c) => (
+                      <div
+                        key={c.id}
+                        className="flex items-center justify-between bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-brand-blue transition-colors"
+                        onClick={() => {
+                          setCoupon(c.code);
+                          setShowCoupons(false);
+                        }}
+                      >
+                        <div className="flex-1">
+                          <p className="text-xs font-bold font-mono text-brand-blue">{c.code}</p>
+                          <p className="text-xs text-gray-600">
+                            {c.discount_percentage
+                              ? `${(c.discount_percentage * 100).toFixed(0)}% off`
+                              : `₹${c.discount_amount} off`}
+                          </p>
+                        </div>
+                        <button
+                          className="text-xs bg-brand-yellow text-brand-blue px-2 py-1 rounded font-semibold hover:bg-yellow-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCoupon(c.code);
+                            setShowCoupons(false);
+                          }}
+                        >
+                          Use
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <input value={coupon} onChange={(e) => setCoupon(e.target.value)} className="flex-1 border px-3 py-2 rounded text-sm" placeholder="Enter coupon code" />
                 <button onClick={applyCoupon} className="bg-brand-blue text-white px-3 md:px-4 py-2 rounded text-sm font-medium">Apply</button>

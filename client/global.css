@@ -127,37 +127,47 @@
   }
 }
 
-/* Marquee animation for header banner */
 @layer utilities {
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
-  100% {
-    transform: translateX(-100%);
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 18s linear infinite;
+    will-change: transform;
   }
-}
 
-.animate-scroll {
-  display: flex; /* Ensure the content is in a single line */
-  animation: marquee 12s linear infinite;
-  animation-play-state: running;
-}
+  .marquee-content {
+    display: flex;
+    white-space: nowrap;
+  }
 
-.animate-scroll:hover {
-  animation-play-state: paused; /* Pause on hover to allow user to read */
-}
+  .marquee-content span {
+    padding-right: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: white;
+  }
 
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
 
-
-  /* Respect reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
-    .animate-scroll {
-      animation-duration: 0s;
-      animation-play-state: paused;
+    .marquee-track {
+      animation: none;
     }
   }
 }
+
 
 /* For small screens (sm), set padding-top to 0 */
 @media (max-width: 639px) {

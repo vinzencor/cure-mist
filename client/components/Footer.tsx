@@ -11,7 +11,6 @@ export default function Footer() {
           <div>
             <img
               src="/public/Logo.png"
-              alt="Cure Mist Logo"
               className="h-[50px] md:h-[62px] w-auto mb-4 md:mb-6"
             />
             <div className="space-y-2">
@@ -56,11 +55,6 @@ export default function Footer() {
                 <a href="https://www.instagram.com/curemist_official?igsh=YzNqZmtweTR4MWpt&utm_source=qr" className="hover:opacity-80 transition-opacity">
                   <span className="inline-flex items-center justify-center bg-brand-blue text-white rounded-full p-2">
                     <FaInstagram size={16} />
-                  </span>
-                </a>
-                <a href="#" className="hover:opacity-80 transition-opacity">
-                  <span className="inline-flex items-center justify-center bg-brand-blue text-white rounded-full p-2">
-                    <FaYoutube size={16} />
                   </span>
                 </a>
               </div>

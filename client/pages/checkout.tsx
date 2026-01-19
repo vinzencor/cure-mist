@@ -187,21 +187,47 @@ export default function Checkout() {
     try {
       // 1. Save Address if not selected from saved and limit < 3
       if (!selectedAddressId && savedAddresses.length < 3) {
-        await supabase.from('user_addresses').insert({
-          user_id: user.id,
-          ...shippingAddress
-        });
+        // Check if this exact address already exists to prevent duplicates
+        const { data: existingAddresses } = await supabase
+          .from('user_addresses')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('street', shippingAddress.street)
+          .eq('city', shippingAddress.city)
+          .eq('state', shippingAddress.state)
+          .eq('zip', shippingAddress.zip)
+          .eq('country', shippingAddress.country);
+
+        // Only insert if address doesn't already exist
+        if (!existingAddresses || existingAddresses.length === 0) {
+          await supabase.from('user_addresses').insert({
+            user_id: user.id,
+            ...shippingAddress
+          });
+        }
       }
 
       // 2. Save Card if NEW (and valid)
       if (!selectedCardId && paymentInfo.cardNumber.length >= 15) {
         const last4 = paymentInfo.cardNumber.slice(-4);
-        await supabase.from('user_cards').insert({
-          user_id: user.id,
-          card_last4: last4,
-          expiry_date: paymentInfo.expiryDate,
-          card_type: 'Credit Card' // Mock type
-        });
+
+        // Check if this card already exists to prevent duplicates
+        const { data: existingCards } = await supabase
+          .from('user_cards')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('card_last4', last4)
+          .eq('expiry_date', paymentInfo.expiryDate);
+
+        // Only insert if card doesn't already exist
+        if (!existingCards || existingCards.length === 0) {
+          await supabase.from('user_cards').insert({
+            user_id: user.id,
+            card_last4: last4,
+            expiry_date: paymentInfo.expiryDate,
+            card_type: 'Credit Card' // Mock type
+          });
+        }
       }
 
       // 3. Create Order
@@ -214,7 +240,6 @@ export default function Checkout() {
         shipping_fee: shippingFee,
         gst_amount: gstAmount,
         total_price: totalPrice,
-        discount_amount: memberDiscount, // Recording discount
         payment_status: 'paid', // Simulating successful payment
         order_status: 'processing'
       }).select().single();
