@@ -21,6 +21,7 @@ import Checkout from "./pages/checkout";
 import Profile from "./pages/profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 // Admin Components
@@ -72,8 +73,7 @@ function AppRoutes() {
             title: "Password Reset",
             description: "Please set a new password."
           });
-          // navigate("/reset-password", { replace: true }); // Future implementation
-          navigate("/profile", { replace: true });
+          navigate("/reset-password", { replace: true });
         }
       }
     }
@@ -94,6 +94,7 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

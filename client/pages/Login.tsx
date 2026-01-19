@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase, getAuthRedirectUrl } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,7 @@ export default function Login() {
         console.log("Attempting to reset password for:", resetEmail);
         setResetLoading(true);
         const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-            redirectTo: `${window.location.origin}/#recovery`,
+            redirectTo: `${getAuthRedirectUrl()}/#recovery`,
         });
         console.log("Reset password result:", { data, error });
         setResetLoading(false);
@@ -70,8 +70,8 @@ export default function Login() {
             toast({ title: "Error", description: error.message, variant: "destructive" });
         } else {
             toast({
-                title: "Email Sent",
-                description: "If an account exists, you will receive a reset link. Check your Spam folder."
+                title: "Password Reset Email Sent! 📧",
+                description: `We've sent a password reset link to ${resetEmail}. Please check your inbox and spam folder.`
             });
             setResetOpen(false);
             setResetEmail("");

@@ -1,6 +1,6 @@
 import { FiPhone, FiMail } from "react-icons/fi";
 import { FaFacebookF, FaInstagram, FaYoutube, FaWhatsapp } from "react-icons/fa";
-import logo from "../assets/Logo.png";
+
 
 export default function Footer() {
   return (
@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Logo and Address */}
           <div>
             <img
-              src={logo}
+              src="/public/Logo.png"
               className="h-[50px] md:h-[62px] w-auto mb-4 md:mb-6"
             />
             <div className="space-y-2">
