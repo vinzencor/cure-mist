@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Logo and Address */}
           <div>
             <img
-              src="/public/Logo.png"
+              src="/Logo.png"
               className="h-[50px] md:h-[62px] w-auto mb-4 md:mb-6"
             />
             <div className="space-y-2">
