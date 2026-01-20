@@ -28,7 +28,7 @@ interface PaymentInfo {
 }
 
 export default function Checkout() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal, clearCart, appliedCoupon } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -141,7 +141,10 @@ export default function Checkout() {
   // NOTE: Ideally this should be centralized in useCart, but for now reproducing logic here for display accuracy.
   const memberDiscount = Math.round(subtotal * 0.05);
 
-  const totalPrice = subtotal - memberDiscount + shippingFee;
+  // Coupon Discount
+  const couponDiscount = appliedCoupon?.discount || 0;
+
+  const totalPrice = Math.max(0, subtotal - memberDiscount - couponDiscount + shippingFee);
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -680,6 +683,13 @@ export default function Checkout() {
                 <span>Member Discount (5%)</span>
                 <span>-₹{memberDiscount}</span>
               </div>
+              {/* Coupon Discount Display */}
+              {appliedCoupon && (
+                <div className="flex justify-between text-green-600 font-medium">
+                  <span>Coupon ({appliedCoupon.code})</span>
+                  <span>-₹{couponDiscount}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span className={shippingFee === 0 ? 'text-green-600 font-semibold' : ''}>

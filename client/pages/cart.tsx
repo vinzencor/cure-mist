@@ -5,11 +5,12 @@ import { supabase } from "@/lib/supabase";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 
 export default function CartPage() {
-  const { items, count, updateQty, removeItem, clearCart, subtotal } = useCart();
+  const { items, count, updateQty, removeItem, clearCart, subtotal, appliedCoupon, setAppliedCoupon } = useCart();
   const [coupon, setCoupon] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0); // Renamed from discountAmount for clarity
+  const [couponDiscount, setCouponDiscount] = useState(0);
   const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
   const [showCoupons, setShowCoupons] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(false);
   const navigate = useNavigate();
 
   const memberDiscount = Math.round(subtotal * 0.05);
@@ -42,14 +43,19 @@ export default function CartPage() {
       .single();
 
     if (data) {
+      let discount = 0;
       if (data.discount_percentage) {
-        setCouponDiscount(Math.round(subtotal * data.discount_percentage));
+        discount = Math.round(subtotal * data.discount_percentage);
       } else if (data.discount_amount) {
-        setCouponDiscount(data.discount_amount);
+        discount = data.discount_amount;
       }
-      alert("Coupon applied!");
+      setCouponDiscount(discount);
+      setAppliedCoupon({ code: coupon.trim().toUpperCase(), discount });
+      setCouponApplied(true);
+      setTimeout(() => setCouponApplied(false), 3000);
     } else {
       setCouponDiscount(0);
+      setAppliedCoupon(null);
       alert("Invalid coupon code");
     }
   };
@@ -193,6 +199,11 @@ export default function CartPage() {
                 <input value={coupon} onChange={(e) => setCoupon(e.target.value)} className="flex-1 border px-3 py-2 rounded text-sm" placeholder="Enter coupon code" />
                 <button onClick={applyCoupon} className="bg-brand-blue text-white px-3 md:px-4 py-2 rounded text-sm font-medium">Apply</button>
               </div>
+              {couponApplied && (
+                <p className="text-green-600 text-sm font-semibold mt-2 flex items-center gap-1">
+                  ✓ Coupon applied successfully!
+                </p>
+              )}
             </div>
 
             <div className="flex justify-between items-center border-t pt-4 mt-2">

@@ -14,6 +14,11 @@ export interface CartItem {
   size?: string;
 }
 
+interface AppliedCoupon {
+  code: string;
+  discount: number;
+}
+
 interface CartContextValue {
   items: CartItem[];
   count: number;
@@ -22,6 +27,8 @@ interface CartContextValue {
   removeItem: (id: string) => Promise<void>;
   clearCart: () => Promise<void>;
   subtotal: number;
+  appliedCoupon: AppliedCoupon | null;
+  setAppliedCoupon: (coupon: AppliedCoupon | null) => void;
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -29,6 +36,7 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const { toast } = useToast();
 
   const fetchCart = async () => {
@@ -210,6 +218,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     removeItem,
     clearCart,
     subtotal,
+    appliedCoupon,
+    setAppliedCoupon,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
