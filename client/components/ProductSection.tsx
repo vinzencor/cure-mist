@@ -5,7 +5,8 @@ export default function ProductSection() {
     {
       title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
       size: "12.5 gm",
-      price: "₹168",
+      price: "₹160",
+      originalPrice: "₹168",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/fae94d70951e579da8c813b13f1c188167fd8109?width=800",
       benefit: "Anti Fungal",
@@ -15,7 +16,8 @@ export default function ProductSection() {
     {
       title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
       size: "25 gm",
-      price: "₹271",
+      price: "₹260",
+      originalPrice: "₹271",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/7476b81632a3d0afe4d9e250f707cf413f6e00bc?width=800",
       benefit: "Anti Fungal",
@@ -25,7 +27,8 @@ export default function ProductSection() {
     {
       title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
       size: "Combo",
-      price: "₹439",
+      price: "₹418",
+      originalPrice: "₹439",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/77da10b4c39b1106d903e6b2abd1f3d612ea2828?width=800",
       benefit: "Anti Fungal",
@@ -55,6 +58,7 @@ export default function ProductSection() {
               title={product.title}
               size={product.size}
               price={product.price}
+              originalPrice={product.originalPrice}
               discount={product.discount}
               image={product.image}
             />
