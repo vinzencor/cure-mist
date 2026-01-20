@@ -13,8 +13,6 @@ export default function CartPage() {
   const [couponApplied, setCouponApplied] = useState(false);
   const navigate = useNavigate();
 
-  const memberDiscount = Math.round(subtotal * 0.05);
-
   // Fetch available coupons on component mount
   useEffect(() => {
     fetchAvailableCoupons();
@@ -60,7 +58,7 @@ export default function CartPage() {
     }
   };
 
-  const totalPayable = subtotal - memberDiscount - couponDiscount;
+  const totalPayable = subtotal - couponDiscount;
 
 
   return (
@@ -109,9 +107,9 @@ export default function CartPage() {
                         </div>
 
                         <div className="ml-auto text-right">
-                          <div className="text-sm text-gray-700">Price: ₹{it.price}</div>
-                          <div className="text-sm text-gray-500 line-through">{it.originalPrice ? `₹${it.originalPrice}` : ''}</div>
-                          <div className="text-lg font-bold">₹{it.price * it.quantity}</div>
+                          <div className="text-sm text-gray-700">Price: ₹{it.originalPrice || it.price}</div>
+                          <div className="text-sm text-gray-500 line-through">{it.price && it.originalPrice && it.price !== it.originalPrice ? `₹${it.price}` : ''}</div>
+                          <div className="text-lg font-bold">₹{(it.originalPrice || it.price) * it.quantity}</div>
                         </div>
                       </div>
                     </div>
@@ -128,12 +126,6 @@ export default function CartPage() {
             <div className="flex justify-between mb-2 text-sm">
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
-            </div>
-
-            {/* Member Discount */}
-            <div className="flex justify-between mb-2 text-sm text-green-600 font-medium">
-              <span>Member Discount (5%)</span>
-              <span>-₹{memberDiscount}</span>
             </div>
 
             {/* Coupon Discount */}

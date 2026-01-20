@@ -208,7 +208,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const subtotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
+  const subtotal = items.reduce((s, it) => s + (it.originalPrice || it.price) * it.quantity, 0);
 
   const value: CartContextValue = {
     items,
