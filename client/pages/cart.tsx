@@ -158,7 +158,7 @@ export default function CartPage() {
                   <div className="space-y-2">
                     {availableCoupons.map((c) => (
                       <div
-                        key={c.id}
+                        key={c.code}
                         className="flex items-center justify-between bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-brand-blue transition-colors"
                         onClick={() => {
                           setCoupon(c.code);
