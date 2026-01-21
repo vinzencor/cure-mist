@@ -353,7 +353,19 @@ export default function Checkout() {
                       type="text"
                       value={customerInfo.dob}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9/]/g, '');
+                        let value = e.target.value.replace(/[^0-9]/g, '');
+                        
+                        // Auto-format as DD/MM/YYYY
+                        if (value.length >= 2) {
+                          value = value.slice(0, 2) + '/' + value.slice(2);
+                        }
+                        if (value.length >= 5) {
+                          value = value.slice(0, 5) + '/' + value.slice(5);
+                        }
+                        if (value.length > 10) {
+                          value = value.slice(0, 10);
+                        }
+                        
                         setCustomerInfo({ ...customerInfo, dob: value });
                       }}
                       className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"

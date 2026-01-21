@@ -80,10 +80,10 @@ export default function Header() {
         {/* Right Actions */}
         <div className="flex items-center gap-2 md:gap-6 justify-end flex-shrink-0">
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
-            <span className="text-black text-sm font-bold">Made by Scientists</span>
+            <span className="text-[#273574] text-sm font-bold">Made by Scientists</span>
           </div>
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
-            <span className="text-black text-sm font-bold">AYUSH approved</span>
+            <span className="text-[#273574] text-sm font-bold">AYUSH approved</span>
           </div>
           <Link to="/blog" className=" md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80">
             BLOG

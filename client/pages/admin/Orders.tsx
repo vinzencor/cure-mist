@@ -247,6 +247,8 @@ export default function AdminOrders() {
                                                                     <p><span className="font-medium">Name:</span> {order.customer_info?.firstName} {order.customer_info?.lastName}</p>
                                                                     <p><span className="font-medium">Email:</span> {order.customer_info?.email}</p>
                                                                     <p><span className="font-medium">Phone:</span> {order.customer_info?.phone}</p>
+                                                                    <p><span className="font-medium">Sex:</span> {order.customer_info?.sex || 'N/A'}</p>
+                                                                    <p><span className="font-medium">Date of Birth:</span> {order.customer_info?.dob || 'N/A'}</p>
                                                                 </div>
                                                             </div>
                                                             <div>
