@@ -348,29 +348,13 @@ export default function Checkout() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Date of Birth (DD/MM/YYYY) *</label>
+                    <label className="block text-sm font-medium mb-2">Date of Birth *</label>
                     <input
-                      type="text"
+                      type="date"
                       value={customerInfo.dob}
-                      onChange={(e) => {
-                        let value = e.target.value.replace(/[^0-9]/g, '');
-                        
-                        // Auto-format as DD/MM/YYYY
-                        if (value.length >= 2) {
-                          value = value.slice(0, 2) + '/' + value.slice(2);
-                        }
-                        if (value.length >= 5) {
-                          value = value.slice(0, 5) + '/' + value.slice(5);
-                        }
-                        if (value.length > 10) {
-                          value = value.slice(0, 10);
-                        }
-                        
-                        setCustomerInfo({ ...customerInfo, dob: value });
-                      }}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, dob: e.target.value })}
+                      max="2009-12-31"
                       className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"
-                      placeholder="DD/MM/YYYY"
-                      maxLength={10}
                       required
                     />
                   </div>
