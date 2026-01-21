@@ -107,36 +107,37 @@ export default function FAQSection() {
           </p>
         </div>
 
-        {/* FAQ Accordion */}
-        <div className="max-w-[1030px] mx-auto">
-          <Accordion type="single" collapsible className="space-y-2 md:space-y-4">
-            {faqs.slice(0, showAll ? faqs.length : 4).map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="border border-[#DFDFDF] rounded-lg bg-white px-3 md:px-8 py-3 md:py-4 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <AccordionTrigger className="text-left hover:no-underline">
-                  <div className="flex items-center gap-2 md:gap-6 w-full">
-                    <div className="flex-shrink-0 hidden md:block">
-                      <QuestionIcon />
+        {/* FAQ Accordion - Two Column Layout */}
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-5">
+            {faqs.slice(0, showAll ? faqs.length : 10).map((faq, index) => (
+              <Accordion key={index} type="single" collapsible>
+                <AccordionItem
+                  value={`item-${index}`}
+                  className="border border-[#DFDFDF] rounded-lg bg-white px-3 md:px-8 py-3 md:py-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline">
+                    <div className="flex items-center gap-2 md:gap-6 w-full">
+                      <div className="flex-shrink-0 hidden md:block">
+                        <QuestionIcon />
+                      </div>
+                      <span className="text-base md:text-xl font-semibold text-black">
+                        {faq.question}
+                      </span>
                     </div>
-                    <span className="text-base md:text-xl font-semibold text-black">
-                      {faq.question}
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pt-3 md:pt-4 pl-0 md:pl-16">
-                  <p className="text-base md:text-lg font-medium text-black leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-3 md:pt-4 pl-0 md:pl-16">
+                    <p className="text-base md:text-lg font-medium text-black leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             ))}
-          </Accordion>
+          </div>
 
           {/* View More/Less Button */}
-          {faqs.length > 4 && (
+          {faqs.length > 10 && (
             <div className="flex justify-center lg:mt-6 lg:py-8 md:mt-8">
               <button
                 onClick={() => setShowAll((s) => !s)}

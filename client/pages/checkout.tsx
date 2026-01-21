@@ -4,12 +4,15 @@ import { useCart } from '@/lib/cart';
 import { useAuth } from '@/lib/auth';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface CustomerInfo {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  sex: string;
+  dob: string;
 }
 
 interface Address {
@@ -19,12 +22,6 @@ interface Address {
   state: string;
   zip: string;
   country: string;
-}
-
-interface PaymentInfo {
-  cardNumber: string;
-  expiryDate: string;
-  cvv: string;
 }
 
 export default function Checkout() {
@@ -39,15 +36,13 @@ export default function Checkout() {
     lastName: '',
     email: '',
     phone: '',
+    sex: '',
+    dob: '',
   });
 
   // Saved Addresses
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-
-  // Saved Cards
-  const [savedCards, setSavedCards] = useState<any[]>([]);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   // Shipping Address
   const [shippingAddress, setShippingAddress] = useState<Address>({
@@ -66,13 +61,6 @@ export default function Checkout() {
     state: '',
     zip: '',
     country: '',
-  });
-
-  // Payment Information
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
   });
 
   useEffect(() => {
@@ -105,15 +93,8 @@ export default function Checkout() {
         if (data) setSavedAddresses(data);
       };
 
-      // Fetch Cards
-      const fetchCards = async () => {
-        const { data } = await supabase.from('user_cards').select('*').eq('user_id', user.id);
-        if (data) setSavedCards(data);
-      };
-
       fetchProfile();
       fetchAddresses();
-      fetchCards();
     }
   }, [user]);
 
@@ -122,29 +103,16 @@ export default function Checkout() {
     setSelectedAddressId(addr.id || null);
   };
 
-  const handleCardSelect = (card: any) => {
-    setSelectedCardId(card.id);
-    setPaymentInfo({
-      cardNumber: `**** **** **** ${card.card_last4}`,
-      expiryDate: card.expiry_date,
-      cvv: '' // Always require CVV
-    });
-  };
-
   // Tax, Discount and Shipping Calculation
   // GST is already included in the product price, so we extract it for display purposes only
   const gstRate = 0.18; // 18% GST
   const gstAmount = Math.round(subtotal * (gstRate / (1 + gstRate))); // Extract GST from the inclusive subtotal
-  const shippingFee = subtotal > 500 ? 0 : 100;
-
-  // Member Discount (Simulating the logic from Cart)
-  // NOTE: Ideally this should be centralized in useCart, but for now reproducing logic here for display accuracy.
-  const memberDiscount = Math.round(subtotal * 0.05);
+  const shippingFee = 0; // Free shipping for all orders
 
   // Coupon Discount
   const couponDiscount = appliedCoupon?.discount || 0;
 
-  const totalPrice = Math.max(0, subtotal - memberDiscount - couponDiscount + shippingFee);
+  const totalPrice = Math.max(0, subtotal - couponDiscount);
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,19 +136,6 @@ export default function Checkout() {
     if (!sameAsBilling) {
       if (!billingAddress.street || !billingAddress.city || !billingAddress.state || !billingAddress.zip || !billingAddress.country) {
         toast({ title: 'Error', description: 'Please fill in all billing address fields' });
-        return;
-      }
-    }
-
-    // Check payment info if no card selected or if it is selected (checking CVV)
-    if (!selectedCardId) {
-      if (!paymentInfo.cardNumber || !paymentInfo.expiryDate || !paymentInfo.cvv) {
-        toast({ title: 'Error', description: 'Please fill in all payment information' });
-        return;
-      }
-    } else {
-      if (!paymentInfo.cvv) {
-        toast({ title: 'Error', description: 'Please enter CVV for the saved card' });
         return;
       }
     }
@@ -210,30 +165,7 @@ export default function Checkout() {
         }
       }
 
-      // 2. Save Card if NEW (and valid)
-      if (!selectedCardId && paymentInfo.cardNumber.length >= 15) {
-        const last4 = paymentInfo.cardNumber.slice(-4);
-
-        // Check if this card already exists to prevent duplicates
-        const { data: existingCards } = await supabase
-          .from('user_cards')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('card_last4', last4)
-          .eq('expiry_date', paymentInfo.expiryDate);
-
-        // Only insert if card doesn't already exist
-        if (!existingCards || existingCards.length === 0) {
-          await supabase.from('user_cards').insert({
-            user_id: user.id,
-            card_last4: last4,
-            expiry_date: paymentInfo.expiryDate,
-            card_type: 'Credit Card' // Mock type
-          });
-        }
-      }
-
-      // 3. Create Order
+      // 2. Create Order
       const { data: order, error: orderError } = await supabase.from('orders').insert({
         user_id: user.id,
         customer_info: customerInfo,
@@ -401,6 +333,35 @@ export default function Checkout() {
                       required
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Sex *</label>
+                    <select
+                      value={customerInfo.sex}
+                      onChange={(e) => setCustomerInfo({ ...customerInfo, sex: e.target.value })}
+                      className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow bg-white"
+                      required
+                    >
+                      <option value="">Select Sex</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Date of Birth (DD/MM/YYYY) *</label>
+                    <input
+                      type="text"
+                      value={customerInfo.dob}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9/]/g, '');
+                        setCustomerInfo({ ...customerInfo, dob: value });
+                      }}
+                      className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"
+                      placeholder="DD/MM/YYYY"
+                      maxLength={10}
+                      required
+                    />
+                  </div>
                 </div>
               </section>
 
@@ -548,97 +509,25 @@ export default function Checkout() {
 
               {/* Payment Information */}
               <section className="bg-white rounded-lg border p-6">
-                <h2 className="text-xl font-bold text-curemist-purple mb-4">Payment Information</h2>
-
-                {/* Saved Cards Selection */}
-                {savedCards.length > 0 && (
-                  <div className="mb-6 space-y-3">
-                    <p className="text-sm font-semibold text-gray-700">Saved Cards</p>
-                    {savedCards.map((card) => (
-                      <div
-                        key={card.id}
-                        className={`flex items-center gap-3 border p-3 rounded cursor-pointer hover:bg-gray-50 transition-colors ${selectedCardId === card.id ? 'border-brand-yellow bg-yellow-50' : ''}`}
-                        onClick={() => handleCardSelect(card)}
-                      >
-                        <input
-                          type="radio"
-                          name="savedCard"
-                          checked={selectedCardId === card.id}
-                          readOnly
-                          className="w-4 h-4 text-brand-yellow focus:ring-brand-yellow"
-                        />
-                        <div className="text-sm flex flex-col">
-                          <span className="font-bold">•••• •••• •••• {card.card_last4}</span>
-                          <span className="text-xs text-gray-500">Expires {card.expiry_date}</span>
-                        </div>
-                      </div>
-                    ))}
-                    <div
-                      className={`flex items-center gap-3 border p-3 rounded cursor-pointer hover:bg-gray-50 transition-colors ${selectedCardId === null ? 'border-brand-yellow bg-yellow-50' : ''}`}
-                      onClick={() => { setSelectedCardId(null); setPaymentInfo({ cardNumber: '', expiryDate: '', cvv: '' }); }}
-                    >
-                      <input
-                        type="radio"
-                        name="savedCard"
-                        checked={selectedCardId === null}
-                        readOnly
-                        className="w-4 h-4 text-brand-yellow focus:ring-brand-yellow"
-                      />
-                      <span className="text-sm font-semibold">Use a new card</span>
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Card Number *</label>
-                    <input
-                      type="text"
-                      value={paymentInfo.cardNumber}
-                      onChange={(e) => setPaymentInfo({ ...paymentInfo, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16) })}
-                      className={`w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow ${selectedCardId ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={16}
-                      required={!selectedCardId}
-                      autoComplete="cc-number"
-                      readOnly={!!selectedCardId}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Expiration Date (MM/YY) *</label>
-                      <input
-                        type="text"
-                        value={paymentInfo.expiryDate}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          if (val.length >= 2) {
-                            setPaymentInfo({ ...paymentInfo, expiryDate: `${val.slice(0, 2)}/${val.slice(2, 4)}` });
-                          } else {
-                            setPaymentInfo({ ...paymentInfo, expiryDate: val });
-                          }
-                        }}
-                        className={`w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow ${selectedCardId ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        required={!selectedCardId}
-                        autoComplete="cc-exp"
-                        readOnly={!!selectedCardId}
-                      />
+                <h2 className="text-xl font-bold text-curemist-purple mb-4">Payment Method</h2>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">CVV/CVC *</label>
-                      <input
-                        type="password"
-                        value={paymentInfo.cvv}
-                        onChange={(e) => setPaymentInfo({ ...paymentInfo, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-                        className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-brand-yellow"
-                        placeholder="123"
-                        maxLength={4}
-                        required
-                        autoComplete="cc-csc"
-                      />
+                      <h3 className="font-bold text-lg text-gray-900">Cash on Delivery (COD)</h3>
+                      <p className="text-sm text-gray-600 mt-1">Pay with cash when your order is delivered</p>
                     </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-green-200">
+                    <p className="text-xs text-gray-600">
+                      ✔ No advance payment required<br/>
+                      ✔ Pay only when you receive your order<br/>
+                      ✔ Verify product quality before payment
+                    </p>
                   </div>
                 </div>
               </section>
@@ -649,7 +538,7 @@ export default function Checkout() {
                 disabled={loading}
                 className="w-full bg-brand-yellow text-brand-blue font-bold py-4 rounded-lg text-lg hover:bg-[#816306] transition-colors disabled:opacity-50 shadow-md"
               >
-                {loading ? "Processing Payment..." : "Place Order"}
+                {loading ? "Placing Order..." : "Place Order"}
               </button>
             </form>
           </div>
@@ -671,17 +560,12 @@ export default function Checkout() {
             {/* Totals */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span>Subtotal (Inc. GST)</span>
+                <span>Subtotal (GST Included)</span>
                 <span>₹{subtotal}</span>
               </div>
-              <div className="flex justify-between text-gray-600">
-                <span>GST Included (18%)</span>
+              <div className="flex justify-between text-gray-600 text-xs">
+                <span>GST (18% included)</span>
                 <span>₹{gstAmount}</span>
-              </div>
-              {/* Member Discount Display */}
-              <div className="flex justify-between text-green-600 font-medium">
-                <span>Member Discount (5%)</span>
-                <span>-₹{memberDiscount}</span>
               </div>
               {/* Coupon Discount Display */}
               {appliedCoupon && (
@@ -692,8 +576,8 @@ export default function Checkout() {
               )}
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span className={shippingFee === 0 ? 'text-green-600 font-semibold' : ''}>
-                  {shippingFee === 0 ? 'FREE' : `₹${shippingFee}`}
+                <span className="text-green-600 font-semibold">
+                  FREE
                 </span>
               </div>
             </div>
@@ -703,9 +587,7 @@ export default function Checkout() {
               <span className="font-bold text-xl text-brand-blue">₹{totalPrice}</span>
             </div>
 
-            {shippingFee === 0 && (
-              <p className="text-green-600 text-xs mt-2 text-center">Free shipping applied!</p>
-            )}
+            <p className="text-green-600 text-xs mt-2 text-center">✔ Free shipping on all orders!</p>
           </aside>
         </div>
       </div>

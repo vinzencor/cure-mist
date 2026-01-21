@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { supabase, getAuthRedirectUrl } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const AuthPopup = ({ onClose }: { onClose: () => void }) => {
   const [view, setView] = useState<'login' | 'register' | 'forgot'>('login');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Reset Password State
   const [resetEmail, setResetEmail] = useState("");
@@ -218,29 +221,47 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
                 </button>
               )}
             </div>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-1"
-              placeholder="Enter your password"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded mt-1 pr-10"
+                placeholder="Enter your password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 translate-y-[5%] text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
+            </div>
           </div>
 
           {view === 'register' && (
             <div className="mb-4">
               <label htmlFor="confirmPassword" className="block text-sm text-purple-900 font-semibold">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded mt-1"
-                placeholder="Confirm your password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded mt-1 pr-10"
+                  placeholder="Confirm your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 translate-y-[5%] text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                </button>
+              </div>
             </div>
           )}
 

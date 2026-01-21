@@ -64,7 +64,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="text-center">
           <p className="text-sm md:text-lg font-medium text-black">
-            © 2025 Cure Mist. All rights reserved.
+            © 2025 CureMist. All rights reserved.
           </p>
         </div>
       </div>

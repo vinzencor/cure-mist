@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -14,6 +15,8 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -93,6 +96,14 @@ export default function Register() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-[110px] pb-10 px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
+                    <div className="flex justify-between items-center mb-2">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="text-sm text-gray-600 hover:text-brand-blue font-medium flex items-center gap-1"
+                        >
+                            ← Continue Browsing
+                        </button>
+                    </div>
                     <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
                     <CardDescription className="text-center">Enter your details to register</CardDescription>
                 </CardHeader>
@@ -111,25 +122,45 @@ export default function Register() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                >
+                                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                                </button>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                type="password"
-                                placeholder="Confirm your password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Confirm your password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                >
+                                    {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                                </button>
+                            </div>
                         </div>
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? "Registering..." : "Register"}

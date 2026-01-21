@@ -1,7 +1,9 @@
 import { Sheet, SheetTrigger } from "./ui/sheet";
 import ProductDetailsSheet from "./ProductDetailsSheet";
+import ProductImageDialog from "./ProductImageDialog";
 import { useCart } from "@/lib/cart";
 import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 interface ProductCardProps {
   title: string;
@@ -10,6 +12,7 @@ interface ProductCardProps {
   originalPrice?: string;
   discount: string;
   image: string;
+  images?: string[];
   benefit?: string;
   form?: string;
   description?: string;
@@ -40,21 +43,31 @@ function AddToCartButton({ title, size, price, image }: { title: string; size: s
   );
 }
 
-export default function ProductCard({ title, size, price, originalPrice, discount, image, benefit, form, description }: ProductCardProps) {
+export default function ProductCard({ title, size, price, originalPrice, discount, image, images, benefit, form, description }: ProductCardProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   return (
-    <div className="flex flex-col items-center">
-      {/* Product Image Container */}
-      <div className="relative w-full max-w-[400px] h-[420px] mb-6">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover rounded-lg"
-        />
-        {/* Size Badge */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/44 backdrop-blur-sm px-6 py-2 rounded-full">
-          <span className="text-purple-badge text-lg font-bold">{size}</span>
+    <>
+      <div className="flex flex-col items-center">
+        {/* Product Image Container */}
+        <div 
+          className="relative w-full max-w-[400px] h-[420px] mb-6 cursor-pointer group"
+          onClick={() => setDialogOpen(true)}
+        >
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover rounded-lg transition-transform group-hover:scale-105"
+          />
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg opacity-0 group-hover:opacity-100 transition-opacity bg-brand-blue/90 px-6 py-3 rounded-lg">Click to View</span>
+          </div>
+          {/* Size Badge */}
+          <div className="absolute bottom-4 right-4 bg-white/44 backdrop-blur-sm px-6 py-2 rounded-full">
+            <span className="text-purple-badge text-lg font-bold">{size}</span>
+          </div>
         </div>
-      </div>
 
       {/* Product Info */}
       <h3 className="text-xl font-semibold text-black text-center mb-2 leading-snug max-w-[242px]">
@@ -98,5 +111,22 @@ export default function ProductCard({ title, size, price, originalPrice, discoun
         />
       </div>
     </div>
+
+    {/* Product Image Dialog */}
+    <ProductImageDialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      title={title}
+      size={size}
+      price={price}
+      originalPrice={originalPrice}
+      discountText={discount}
+      image={image}
+      images={images}
+      benefit={benefit}
+      form={form}
+      description={description}
+    />
+    </>
   );
 }

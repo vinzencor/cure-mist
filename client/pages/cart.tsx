@@ -69,10 +69,24 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
               <h2 className="text-xl md:text-2xl font-bold">Your Cart ({count} item{count !== 1 ? "s" : ""})</h2>
-              <div className="flex gap-3 w-full md:w-auto">
-                <button onClick={clearCart} className="text-sm text-red-600 font-semibold border border-red-200 px-3 md:px-4 py-2 rounded flex-1 md:flex-none">Clear Cart</button>
-                <button onClick={() => navigate(-1)} className="text-sm bg-brand-yellow px-3 md:px-4 py-2 rounded text-brand-blue font-semibold flex-1 md:flex-none">Continue Shopping</button>
-              </div>
+              {items.length > 0 && (
+                <div className="flex gap-3 w-full md:w-auto">
+                  <button onClick={clearCart} className="text-sm text-red-600 font-semibold border border-red-200 px-3 md:px-4 py-2 rounded flex-1 md:flex-none">Clear Cart</button>
+                  <button onClick={() => {
+                  navigate(-1);
+                  setTimeout(() => {
+                    const el = document.getElementById("products");
+                    if (el) {
+                      const offsetTop = el.offsetTop - 120;
+                      window.scrollTo({
+                        top: offsetTop,
+                        behavior: "smooth",
+                      });
+                    }
+                  }, 100);
+                }} className="text-sm bg-brand-yellow px-3 md:px-4 py-2 rounded text-brand-blue font-semibold flex-1 md:flex-none">Continue Shopping</button>
+                </div>
+              )}
             </div>
 
             {items.length === 0 ? (
@@ -83,7 +97,13 @@ export default function CartPage() {
                     navigate("/");
                     setTimeout(() => {
                       const el = document.getElementById("products");
-                      el?.scrollIntoView({ behavior: "smooth" });
+                      if (el) {
+                        const offsetTop = el.offsetTop - 120; // Offset to show buttons
+                        window.scrollTo({
+                          top: offsetTop,
+                          behavior: "smooth",
+                        });
+                      }
                     }, 100);
                   }}
                   className="inline-block mt-4 bg-brand-yellow px-6 py-3 rounded text-brand-blue font-bold">
@@ -121,20 +141,33 @@ export default function CartPage() {
           </div>
 
           {/* Right: Summary */}
-          <aside className="rounded border p-4 md:p-6 bg-white">
-            <h3 className="text-base md:text-lg font-semibold mb-4">Order Summary</h3>
-            <div className="flex justify-between mb-2 text-sm">
-              <span>Subtotal</span>
-              <span>₹{subtotal}</span>
-            </div>
-
-            {/* Coupon Discount */}
-            {couponDiscount > 0 && (
-              <div className="flex justify-between mb-4 text-sm text-green-600 font-medium">
-                <span>Coupon Discount</span>
-                <span>-₹{couponDiscount}</span>
+          {items.length > 0 && (
+            <aside className="rounded border p-4 md:p-6 bg-white">
+              <h3 className="text-base md:text-lg font-semibold mb-4">Order Summary</h3>
+              <div className="flex justify-between mb-2 text-sm">
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
               </div>
-            )}
+
+              {/* Coupon Discount */}
+              {couponDiscount > 0 && (
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-green-600 font-medium">
+                    <span>Coupon Discount ({appliedCoupon?.code})</span>
+                    <span>-₹{couponDiscount}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setCouponDiscount(0);
+                      setAppliedCoupon(null);
+                      setCoupon("");
+                    }}
+                    className="text-xs text-red-600 hover:underline font-medium mt-1"
+                  >
+                    Remove Coupon
+                  </button>
+                </div>
+              )}
 
             <div className="mb-4 mt-4 border-t pt-4">
               <div className="flex items-center justify-between mb-2">
@@ -210,6 +243,7 @@ export default function CartPage() {
               Checkout
             </button>
           </aside>
+          )}
         </div>
       </div>
     </div>

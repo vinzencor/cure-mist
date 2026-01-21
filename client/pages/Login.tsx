@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     // Reset Password State
     const [resetEmail, setResetEmail] = useState("");
@@ -82,6 +84,14 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-[110px] pb-10 px-4">
             <Card className="w-full max-w-md">
                 <CardHeader>
+                    <div className="flex justify-between items-center mb-2">
+                        <button
+                            onClick={() => navigate('/')}
+                            className="text-sm text-gray-600 hover:text-brand-blue font-medium flex items-center gap-1"
+                        >
+                            ← Back to Website
+                        </button>
+                    </div>
                     <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
                     <CardDescription className="text-center">Enter your email and password to access your account</CardDescription>
                 </CardHeader>
@@ -135,14 +145,24 @@ export default function Login() {
                                     </DialogContent>
                                 </Dialog>
                             </div>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                >
+                                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                                </button>
+                            </div>
                         </div>
                         <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? "Logging in..." : "Login"}

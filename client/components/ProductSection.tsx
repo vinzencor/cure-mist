@@ -3,34 +3,37 @@ import ProductCard from "./ProductCard";
 export default function ProductSection() {
   const products = [
     {
-      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray 12.5g",
       size: "12.5 gm",
       price: "₹160",
       originalPrice: "₹168",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/fae94d70951e579da8c813b13f1c188167fd8109?width=800",
+      images: ["/Products/Product1.0.png", "/Products/Product1.1.png"],
       benefit: "Anti Fungal",
       form: "Spray",
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
     },
     {
-      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray 25g",
       size: "25 gm",
       price: "₹260",
       originalPrice: "₹271",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/7476b81632a3d0afe4d9e250f707cf413f6e00bc?width=800",
+      images: ["/Products/Product2.0.jpeg", "/Products/Product2.1.jpeg"],
       benefit: "Anti Fungal",
       form: "Spray",
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
     },
     {
-      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray",
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray Combo Pack (37.5g)",
       size: "Combo",
       price: "₹418",
       originalPrice: "₹439",
       discount: "5% Off",
       image: "https://api.builder.io/api/v1/image/assets/TEMP/77da10b4c39b1106d903e6b2abd1f3d612ea2828?width=800",
+      images: ["/Products/Product3.0.jpeg", "/Products/Product3.1.jpeg"],
       benefit: "Anti Fungal",
       form: "Spray",
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
@@ -61,6 +64,10 @@ export default function ProductSection() {
               originalPrice={product.originalPrice}
               discount={product.discount}
               image={product.image}
+              images={product.images}
+              benefit={product.benefit}
+              form={product.form}
+              description={product.description}
             />
           ))}
         </div>

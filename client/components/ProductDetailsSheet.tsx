@@ -93,7 +93,7 @@ export default function ProductDetailsSheet({
             <div className="mb-6">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-sm text-gray-700">Actual Price</span>
-                <span className="text-sm font-medium text-black">{price}</span>
+                <span className="text-sm font-medium text-black">{originalPrice}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-red-500">Discount ({discountText})</span>

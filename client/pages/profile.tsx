@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const tabs = ['Profile Information', 'Order History', 'Saved Cards', 'Address Information'] as const;
+const tabs = ['Profile Information', 'Order History', 'Address Information'] as const;
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -24,7 +25,6 @@ export default function Profile() {
   const [profile, setProfile] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [addresses, setAddresses] = useState<any[]>([]);
-  const [savedCards, setSavedCards] = useState<any[]>([]);
   const [defaultAddressId, setDefaultAddressId] = useState<string | null>(null);
 
   // Profile Edit State
@@ -46,6 +46,8 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loadingPass, setLoadingPass] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Delete Profile State
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -85,10 +87,6 @@ export default function Profile() {
     // Addresses
     const { data: addrs } = await supabase.from('user_addresses').select('*').eq('user_id', user.id);
     if (addrs) setAddresses(addrs);
-
-    // Saved Cards
-    const { data: cards } = await supabase.from('user_cards').select('*').eq('user_id', user.id);
-    if (cards) setSavedCards(cards);
   };
 
   const handleUpdateProfile = async () => {
@@ -358,23 +356,41 @@ export default function Profile() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                     <div className="flex flex-col">
                       <label className="font-medium mb-1">New Password</label>
-                      <input
-                        className="border p-3 rounded"
-                        placeholder="New Password"
-                        type="password"
-                        value={newPassword}
-                        onChange={e => setNewPassword(e.target.value)}
-                      />
+                      <div className="relative">
+                        <input
+                          className="w-full border p-3 rounded pr-10"
+                          placeholder="New Password"
+                          type={showNewPassword ? "text" : "password"}
+                          value={newPassword}
+                          onChange={e => setNewPassword(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="flex flex-col">
                       <label className="font-medium mb-1">Confirm Password</label>
-                      <input
-                        className="border p-3 rounded"
-                        placeholder="Confirm Password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                      />
+                      <div className="relative">
+                        <input
+                          className="w-full border p-3 rounded pr-10"
+                          placeholder="Confirm Password"
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                        </button>
+                      </div>
                     </div>
                     <Button onClick={handleUpdatePassword} disabled={loadingPass} className="bg-brand-yellow text-brand-blue font-bold">
                       {loadingPass ? "UPDATING..." : "UPDATE PASSWORD"}
@@ -472,7 +488,7 @@ export default function Profile() {
             )}
 
             {/* Address Information Tab */}
-            {active === 3 && (
+            {active === 2 && (
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold">Address Information</h3>
@@ -570,55 +586,6 @@ export default function Profile() {
                         </button>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {active === 2 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-6">Saved Cards</h3>
-                {savedCards.length === 0 ? (
-                  <div className="text-center py-10">
-                    <p className="text-muted-foreground">No saved cards found.</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {savedCards.map((card) => (
-                      <div key={card.id} className="border p-4 rounded-lg bg-gradient-to-br from-gray-50 to-white shadow-sm hover:shadow-md transition-shadow relative group">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="bg-brand-blue text-white text-xs px-2 py-1 rounded">
-                            {card.card_type || 'Card'}
-                          </div>
-                          <button
-                            onClick={async () => {
-                              if (!confirm("Are you sure you want to remove this card?")) return;
-                              const { error } = await supabase.from('user_cards').delete().eq('id', card.id);
-                              if (error) {
-                                toast({ title: "Error deleting card", description: error.message, variant: "destructive" });
-                              } else {
-                                toast({ title: "Card removed" });
-                                fetchData();
-                              }
-                            }}
-                            className="text-red-500 hover:text-red-700 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            REMOVE
-                          </button>
-                        </div>
-                        <div className="mb-4">
-                          <p className="text-gray-500 text-xs uppercase tracking-widest mb-1">Card Number</p>
-                          <p className="font-mono text-xl font-bold text-gray-700">•••• •••• •••• {card.card_last4}</p>
-                        </div>
-                        <div className="flex justify-between items-end">
-                          <div>
-                            <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">Expires</p>
-                            <p className="font-mono text-sm font-semibold">{card.expiry_date}</p>
-                          </div>
-                          <div className="h-8 w-12 bg-gray-200 rounded opacity-50"></div>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 )}
               </div>

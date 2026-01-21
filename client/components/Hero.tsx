@@ -32,7 +32,7 @@ export default function Hero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, []);
@@ -89,9 +89,14 @@ export default function Hero() {
 
             <button
               onClick={() => {
-                document.getElementById("products")?.scrollIntoView({
-                  behavior: "smooth",
-                });
+                const productSection = document.getElementById("products");
+                if (productSection) {
+                  const offsetTop = productSection.offsetTop - 120; // Offset to show buttons
+                  window.scrollTo({
+                    top: offsetTop,
+                    behavior: "smooth",
+                  });
+                }
               }}
               className="bg-brand-yellow hover:bg-brand-yellow/90 text-brand-blue px-5 md:px-12 py-3 md:py-4 rounded-lg text-sm sm:text-base md:text-lg font-extrabold transition-colors"
             >
