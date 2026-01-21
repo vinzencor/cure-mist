@@ -85,10 +85,10 @@ export default function Header() {
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
             <span className="text-black text-sm font-bold">AYUSH approved</span>
           </div>
-          <Link to="/blog" className="hidden md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80">
+          <Link to="/blog" className=" md:flex items-center text-black text-xs md:text-sm font-semibold hover:opacity-80">
             BLOG
           </Link>
-          {/* Profile Button / Login */}
+          {/* Profile Button / Login.... */}
           {!user ? (
             <button
               onClick={toggleProfilePopup}
