@@ -89,9 +89,9 @@ export default function Hero() {
 
             <button
               onClick={() => {
-                const productSection = document.getElementById("products");
-                if (productSection) {
-                  const offsetTop = productSection.offsetTop - 120; // Offset to show buttons
+                const productCards = document.getElementById("product-cards");
+                if (productCards) {
+                  const offsetTop = productCards.offsetTop - 120; // Offset for header
                   window.scrollTo({
                     top: offsetTop,
                     behavior: "smooth",

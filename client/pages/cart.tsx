@@ -75,7 +75,7 @@ export default function CartPage() {
                   <button onClick={() => {
                   navigate(-1);
                   setTimeout(() => {
-                    const el = document.getElementById("products");
+                    const el = document.getElementById("product-cards");
                     if (el) {
                       const offsetTop = el.offsetTop - 120;
                       window.scrollTo({
@@ -96,9 +96,9 @@ export default function CartPage() {
                   onClick={() => {
                     navigate("/");
                     setTimeout(() => {
-                      const el = document.getElementById("products");
+                      const el = document.getElementById("product-cards");
                       if (el) {
-                        const offsetTop = el.offsetTop - 120; // Offset to show buttons
+                        const offsetTop = el.offsetTop - 120; // Offset for header
                         window.scrollTo({
                           top: offsetTop,
                           behavior: "smooth",
