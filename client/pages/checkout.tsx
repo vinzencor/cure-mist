@@ -104,9 +104,16 @@ export default function Checkout() {
   };
 
   // Tax, Discount and Shipping Calculation
-  // GST is already included in the product price, so we extract it for display purposes only
-  const gstRate = 0.18; // 18% GST
-  const gstAmount = Math.round(subtotal * (gstRate / (1 + gstRate))); // Extract GST from the inclusive subtotal
+  // Calculate MRP (Original Price) - sum of all original prices
+  const mrpTotal = items.reduce((sum, item) => {
+    const itemOriginalPrice = item.originalPrice || item.price;
+    return sum + (itemOriginalPrice * item.quantity);
+  }, 0);
+
+  // Calculate 5% discount amount (difference between MRP and offer price)
+  const discountAmount = mrpTotal - subtotal;
+
+  // GST is already included in the subtotal (offer price)
   const shippingFee = 0; // Free shipping for all orders
 
   // Coupon Discount
@@ -556,17 +563,23 @@ export default function Checkout() {
             {/* Totals */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
+                <span>MRP (Original Price)</span>
+                <span>₹{mrpTotal}</span>
+              </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-green-600 font-medium">
+                  <span>5% Discount Amount</span>
+                  <span>-₹{discountAmount}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
                 <span>Subtotal (GST Included)</span>
                 <span>₹{subtotal}</span>
-              </div>
-              <div className="flex justify-between text-gray-600 text-xs">
-                <span>GST (18% included)</span>
-                <span>₹{gstAmount}</span>
               </div>
               {/* Coupon Discount Display */}
               {appliedCoupon && (
                 <div className="flex justify-between text-green-600 font-medium">
-                  <span>Coupon ({appliedCoupon.code})</span>
+                  <span>Coupon Discount ({appliedCoupon.code})</span>
                   <span>-₹{couponDiscount}</span>
                 </div>
               )}

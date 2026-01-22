@@ -72,6 +72,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           product_id,
           title,
           price,
+          original_price,
           image,
           size
         `)
@@ -84,6 +85,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: item.title,
         image: item.image,
         price: Number(item.price),
+        originalPrice: item.original_price ? Number(item.original_price) : undefined,
         quantity: item.quantity,
         size: item.size
       }));
@@ -139,6 +141,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           quantity: qty,
           title: item.title,
           price: item.price,
+          original_price: item.originalPrice,
           image: item.image,
           size: item.size
         });
@@ -208,7 +211,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const subtotal = items.reduce((s, it) => s + (it.originalPrice || it.price) * it.quantity, 0);
+  const subtotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
 
   const value: CartContextValue = {
     items,

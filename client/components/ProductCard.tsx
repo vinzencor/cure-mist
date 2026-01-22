@@ -21,7 +21,7 @@ interface ProductCardProps {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 
-function AddToCartButton({ title, size, price, image }: { title: string; size: string; price: string; image: string }) {
+function AddToCartButton({ title, size, price, originalPrice, image }: { title: string; size: string; price: string; originalPrice?: string; image: string }) {
   const { addItem } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -33,7 +33,8 @@ function AddToCartButton({ title, size, price, image }: { title: string; size: s
     }
     const slug = `${title.replace(/\s+/g, "-").toLowerCase()}-${size.replace(/\s+/g, "").toLowerCase()}`;
     const numericPrice = Number(price.replace(/[^\d]/g, "")) || 0;
-    addItem({ id: slug, title, image, price: numericPrice, quantity: 1, size }, 1);
+    const numericOriginalPrice = originalPrice ? Number(originalPrice.replace(/[^\d]/g, "")) || 0 : numericPrice;
+    addItem({ id: slug, title, image, price: numericPrice, originalPrice: numericOriginalPrice, quantity: 1, size }, 1);
     try { toast({ title: "Added to cart" }); } catch { }
   };
   return (
@@ -107,6 +108,7 @@ export default function ProductCard({ title, size, price, originalPrice, discoun
           title={title}
           size={size}
           price={price}
+          originalPrice={originalPrice}
           image={image}
         />
       </div>

@@ -58,6 +58,15 @@ export default function CartPage() {
     }
   };
 
+  // Calculate MRP (Original Price) - sum of all original prices
+  const mrpTotal = items.reduce((sum, item) => {
+    const itemOriginalPrice = item.originalPrice || item.price;
+    return sum + (itemOriginalPrice * item.quantity);
+  }, 0);
+
+  // Calculate 5% discount amount (difference between MRP and offer price)
+  const discountAmount = mrpTotal - subtotal;
+
   const totalPayable = subtotal - couponDiscount;
 
 
@@ -127,9 +136,11 @@ export default function CartPage() {
                         </div>
 
                         <div className="ml-auto text-right">
-                          <div className="text-sm text-gray-700">Price: ₹{it.originalPrice || it.price}</div>
-                          <div className="text-sm text-gray-500 line-through">{it.price && it.originalPrice && it.price !== it.originalPrice ? `₹${it.price}` : ''}</div>
-                          <div className="text-lg font-bold">₹{(it.originalPrice || it.price) * it.quantity}</div>
+                          {it.originalPrice && it.originalPrice !== it.price && (
+                            <div className="text-sm text-gray-500 line-through">₹{it.originalPrice}</div>
+                          )}
+                          <div className="text-sm text-gray-700">Price: ₹{it.price}</div>
+                          <div className="text-lg font-bold">₹{it.price * it.quantity}</div>
                         </div>
                       </div>
                     </div>
@@ -144,9 +155,23 @@ export default function CartPage() {
           {items.length > 0 && (
             <aside className="rounded border p-4 md:p-6 bg-white">
               <h3 className="text-base md:text-lg font-semibold mb-4">Order Summary</h3>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Subtotal</span>
-                <span>₹{subtotal}</span>
+              
+              {/* Pricing Breakdown */}
+              <div className="space-y-3 text-sm mb-4 pb-4 border-b">
+                <div className="flex justify-between">
+                  <span>MRP (Original Price)</span>
+                  <span>₹{mrpTotal}</span>
+                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-green-600 font-medium">
+                    <span>5% Discount Amount</span>
+                    <span>-₹{discountAmount}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>Subtotal (GST Included)</span>
+                  <span>₹{subtotal}</span>
+                </div>
               </div>
 
               {/* Coupon Discount */}
@@ -233,8 +258,10 @@ export default function CartPage() {
 
             <div className="flex justify-between items-center border-t pt-4 mt-2">
               <span className="font-bold text-base md:text-lg">Total</span>
-              <span className="font-bold text-base md:text-lg">₹{totalPayable > 0 ? totalPayable : 0}</span>
+              <span className="font-bold text-base md:text-lg text-brand-blue">₹{totalPayable > 0 ? totalPayable : 0}</span>
             </div>
+
+            <p className="text-green-600 text-xs mt-2 text-center">✔ Free shipping on all orders!</p>
 
             <button
               onClick={() => navigate('/checkout')}
