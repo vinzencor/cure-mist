@@ -69,16 +69,17 @@ export default function Header() {
    </div>
 
       {/* Main Navigation */}
-      <div className="bg-brand-yellow h-[60px] md:h-[95px] flex items-center justify-between px-3 md:px-6 lg:px-24">
-        {/* Logo */}
-        <Link to="/" className="flex items-center flex-shrink-0">
-          <img
-            src="https://cure-mist.vercel.app/Logo.png"
-            className="h-[35px] md:h-[62px] w-auto"
-          />
-        </Link>
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 md:gap-6 justify-end flex-shrink-0">
+      <div className="bg-brand-yellow h-[60px] md:h-[95px]">
+        <div className="container mx-auto px-4 md:px-6 lg:px-24 h-full flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center flex-shrink-0">
+            <img
+              src="https://cure-mist.vercel.app/Logo.png"
+              className="h-[35px] md:h-[62px] w-auto"
+            />
+          </Link>
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 md:gap-6 justify-end flex-shrink-0">
           <div className="hidden lg:flex px-6 py-2 rounded-[14px] border border-[#FFF0C3] bg-gradient-to-r from-[#FFE38D] to-[#FFD147]">
             <span className="text-[#273574] text-sm font-bold">Made by Scientists</span>
           </div>
@@ -139,6 +140,7 @@ export default function Header() {
             <ShoppingCart className="w-5 h-4 md:w-[26px] md:h-[23px]" />
             <span className="text-xs md:text-sm"><CartCount /></span>
           </Link>
+        </div>
         </div>
       </div>
 
