@@ -75,7 +75,9 @@ export default function Checkout() {
             firstName: data.first_name || '',
             lastName: data.last_name || '',
             email: data.email || user.email || '',
-            phone: data.phone || ''
+            phone: data.phone || '',
+            sex: data.sex || '',
+            dob: data.dob || ''
           });
 
           if (data.default_address_id) {
@@ -120,6 +122,9 @@ export default function Checkout() {
   const couponDiscount = appliedCoupon?.discount || 0;
 
   const totalPrice = Math.max(0, subtotal - couponDiscount);
+  
+  // GST calculation (18% of subtotal before coupon discount)
+  const gstAmount = subtotal * 0.18;
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
