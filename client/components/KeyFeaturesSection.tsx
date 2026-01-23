@@ -1,7 +1,7 @@
 // KeyFeaturesSection.js
 import React from "react";
 import KeyFeatureCard from "./KeyFeatureCard"; // Importing the KeyFeatureCard component
-import './keyFeatures.css'; // Importing the styles
+import './KeyFeatures.css';// Importing the styles
 
 const KeyFeaturesSection = () => {
   const features = [
