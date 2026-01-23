@@ -193,8 +193,9 @@ export default function ProductImageDialog({
                 {/* Description */}
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1.5 sm:mb-2 text-xs sm:text-sm uppercase tracking-wide">Description</h3>
+                  <div className="mb-1 text-[13px] sm:text-sm font-semibold text-brand-blue">Description Header</div>
                   <p className="text-xs sm:text-sm md:text-base text-gray-700 leading-relaxed">
-                    {description ?? "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam."}
+                    {`Cure Mist – The World’s First Ayurvedic Wound Spray. 100% Ayurvedic and AYUSH-approved, it delivers fast, hands-free healing with a waterproof, dust-proof protective layer, harnessing turmeric’s anti-bacterial, anti-fungal, and anti-inflammatory power for safe use across all ages.`}
                   </p>
                 </div>
 

@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import KeyFeaturesSection from "@/components/KeyFeaturesSection";
 
 export default function Index() {
   const location = useLocation();
@@ -35,6 +36,7 @@ export default function Index() {
       <Header />
       <main className="pt-[110px] md:pt-[100px]">
         <Hero />
+        <KeyFeaturesSection/>
         <ProductSection />
         <FeatureSections />
         <StatsSection />
