@@ -5,16 +5,16 @@ import './KeyFeatures.css';// Importing the styles
 
 const KeyFeaturesSection = () => {
   const features = [
-    { icon: "check", text: "100% Ayurvedic" },
-    { icon: "sparkles", text: "Derm Tested Safe!" },
-    { icon: "leaf", text: "No side effects" },
-    { icon: "heartbeat", text: "Fast Dry Healing" },
-    { icon: "fire", text: "Handsfree Spray" },
-    { icon: "shield", text: "Water Dust Proof" },
-    { icon: "leaf", text: "Anti Germ Healing" },
-    { icon: "check", text: "Powered by turmeric" },
-    { icon: "heartbeat", text: "Powered by turmeric" },
-    { icon: "fire", text: "Anti Germ Healing" },
+    { icon: "ayurvedic", text: "100% Ayurvedic" },
+    { icon: "derm", text: "Derm Tested Safe!" },
+    { icon: "safe", text: "No side effects" },
+    { icon: "healing", text: "Fast Dry Healing" },
+    { icon: "spray", text: "Handsfree Spray" },
+    { icon: "waterproof", text: "Water Dust Proof" },
+    { icon: "antigerm", text: "Anti Germ Healing" },
+    { icon: "turmeric", text: "Powered by turmeric" },
+    { icon: "ayush", text: "AYUSH Approved" },
+    { icon: "ages", text: "Safe for all ages" },
   ];
 
   // Responsive grid: 2 rows on desktop, compact grid on mobile

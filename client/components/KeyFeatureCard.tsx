@@ -1,7 +1,8 @@
 // KeyFeatureCard.js
 import React from "react";
 // Import React Icons
-import { FaCheckCircle, FaHandSparkles, FaLeaf, FaFireAlt, FaUserShield, FaHeartbeat } from 'react-icons/fa'; // You can import any icon you want
+import { FaCheckCircle, FaHandSparkles, FaLeaf, FaFireAlt, FaUserShield, FaHeartbeat, FaShieldAlt, FaUserMd, FaChild, FaHandsWash } from 'react-icons/fa';
+import { MdOutlineHealthAndSafety } from 'react-icons/md';
 
 // Functional component that takes in props: icon and text
 const KeyFeatureCard = ({ icon, text }) => {
@@ -9,23 +10,35 @@ const KeyFeatureCard = ({ icon, text }) => {
   let IconComponent;
 
   switch (icon) {
-    case 'check':
-      IconComponent = FaCheckCircle;
-      break;
-    case 'sparkles':
-      IconComponent = FaHandSparkles;
-      break;
-    case 'leaf':
+    case 'ayurvedic':
       IconComponent = FaLeaf;
       break;
-    case 'fire':
-      IconComponent = FaFireAlt;
+    case 'derm':
+      IconComponent = FaUserMd;
       break;
-    case 'shield':
+    case 'safe':
+      IconComponent = MdOutlineHealthAndSafety;
+      break;
+    case 'healing':
+      IconComponent = FaHeartbeat;
+      break;
+    case 'spray':
+      IconComponent = FaHandsWash;
+      break;
+    case 'waterproof':
+      IconComponent = FaShieldAlt;
+      break;
+    case 'antigerm':
       IconComponent = FaUserShield;
       break;
-    case 'heartbeat':
-      IconComponent = FaHeartbeat;
+    case 'turmeric':
+      IconComponent = FaCheckCircle;
+      break;
+    case 'ayush':
+      IconComponent = FaCheckCircle;
+      break;
+    case 'ages':
+      IconComponent = FaChild;
       break;
     default:
       IconComponent = FaCheckCircle; // Fallback icon
