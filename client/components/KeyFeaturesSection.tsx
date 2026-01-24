@@ -5,16 +5,16 @@ import './KeyFeatures.css';// Importing the styles
 
 const KeyFeaturesSection = () => {
   const features = [
-    { icon: "check", text: "Dermatologically tested" },
-    { icon: "sparkles", text: "No side effects" },
-    { icon: "leaf", text: "Safe for all ages – infants to elders" },
-    { icon: "heartbeat", text: "World’s 1st Ayurvedic Wound Spray" },
-    { icon: "fire", text: "Fast-acting & quick-drying (under 1 min)" },
-    { icon: "shield", text: "Hands-free, easy-to-use spray" },
-    { icon: "leaf", text: "Waterproof & dustproof" },
+    { icon: "check", text: "100% Ayurvedic" },
+    { icon: "sparkles", text: "Derm Tested Safe!" },
+    { icon: "leaf", text: "No side effects" },
+    { icon: "heartbeat", text: "Fast Dry Healing" },
+    { icon: "fire", text: "Handsfree Spray" },
+    { icon: "shield", text: "Water Dust Proof" },
+    { icon: "leaf", text: "Anti Germ Healing" },
     { icon: "check", text: "Powered by turmeric" },
-    { icon: "heartbeat", text: "Anti-bacterial, anti-fungal & anti-inflammatory" },
-    { icon: "fire", text: "Effective for cuts, burns, wounds & skin infections" },
+    { icon: "heartbeat", text: "Powered by turmeric" },
+    { icon: "fire", text: "Anti Germ Healing" },
   ];
 
   // Responsive grid: 2 rows on desktop, compact grid on mobile
