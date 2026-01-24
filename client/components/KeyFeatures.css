@@ -17,13 +17,9 @@
 
 
 /* Premium feature rows container */
-.feature-rows-container {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
 
-.feature-cards-row {
+/* Responsive grid for features */
+.feature-cards-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 32px;
@@ -31,19 +27,16 @@
 }
 
 @media (max-width: 1024px) {
-  .feature-cards-row {
+  .feature-cards-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
 }
 
 @media (max-width: 600px) {
-  .feature-cards-row {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .feature-rows-container {
-    gap: 18px;
+  .feature-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 }
 
