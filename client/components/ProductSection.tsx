@@ -8,7 +8,7 @@ export default function ProductSection() {
       price: "₹160",
       originalPrice: "₹168",
       discount: "5% Off",
-      image: "https://api.builder.io/api/v1/image/assets/TEMP/fae94d70951e579da8c813b13f1c188167fd8109?width=800",
+      image: "/Products/homeproduct1.png",
       images: ["/Products/Product1.0.png", "/Products/Product1.1.png"],
       benefit: "Anti Fungal",
       form: "Spray",
@@ -20,7 +20,7 @@ export default function ProductSection() {
       price: "₹260",
       originalPrice: "₹271",
       discount: "5% Off",
-      image: "https://api.builder.io/api/v1/image/assets/TEMP/7476b81632a3d0afe4d9e250f707cf413f6e00bc?width=800",
+      image: "/Products/homeproduct2.png",
       images: ["/Products/Product2.0.jpeg", "/Products/Product2.1.jpeg"],
       benefit: "Anti Fungal",
       form: "Spray",
@@ -32,8 +32,20 @@ export default function ProductSection() {
       price: "₹418",
       originalPrice: "₹439",
       discount: "5% Off",
-      image: "https://api.builder.io/api/v1/image/assets/TEMP/77da10b4c39b1106d903e6b2abd1f3d612ea2828?width=800",
+      image: "/Products/homeproduct3.png",
       images: ["/Products/Product3.0.jpeg", "/Products/Product3.1.jpeg"],
+      benefit: "Anti Fungal",
+      form: "Spray",
+      description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
+    },
+     {
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray Combo Pack 50g",
+      size: "50 gm",
+      price: "₹345",
+      originalPrice: "₹363",
+      discount: "5% Off",
+      image: "/Products/homeproduct4.png",
+      images: ["/Products/Product4.0.png", "/Products/Product4.1.png"],
       benefit: "Anti Fungal",
       form: "Spray",
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
@@ -42,7 +54,7 @@ export default function ProductSection() {
 
   return (
     <section id="products" className="py-12 md:py-20 bg-white">
-      <div className="container mx-auto px-4 md:px-6 lg:px-24">
+      <div className="container mx-auto px-4 sm:px-6 md:px-6 lg:px-24">
         {/* Section Header */}
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-[34px] font-bold text-black mb-2 md:mb-4">
@@ -54,7 +66,7 @@ export default function ProductSection() {
         </div>
 
         {/* Product Grid */}
-        <div id="product-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 lg:gap-12">
+        <div id="product-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-1 md:gap-x-2 lg:gap-x-3 gap-y-6 md:gap-y-12 lg:gap-y-16">
           {products.map((product, index) => (
             <ProductCard
               key={index}

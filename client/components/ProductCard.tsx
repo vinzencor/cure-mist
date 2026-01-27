@@ -47,13 +47,16 @@ function AddToCartButton({ title, size, price, originalPrice, image }: { title: 
 export default function ProductCard({ title, size, price, originalPrice, discount, image, images, benefit, form, description }: ProductCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const openDialog = () => setDialogOpen(true);
+  const closeDialog = () => setDialogOpen(false);
+
   return (
     <>
       <div className="flex flex-col items-center">
         {/* Product Image Container */}
-        <div 
+        <div
           className="relative w-full max-w-[400px] h-[420px] mb-6 cursor-pointer group"
-          onClick={() => setDialogOpen(true)}
+          onClick={openDialog}
         >
           <img
             src={image}
@@ -70,65 +73,53 @@ export default function ProductCard({ title, size, price, originalPrice, discoun
           </div>
         </div>
 
-      {/* Product Info */}
-      <h3 className="text-xl font-semibold text-black text-center mb-2 leading-snug max-w-[242px]">
-        {title}
-      </h3>
+        {/* Product Info */}
+        <h3 className="text-xl font-semibold text-black text-center mb-2 leading-snug max-w-[242px]">
+          {title}
+        </h3>
 
-      {/* Pricing */}
-      <div className="flex items-center gap-3 mb-1">
-        <span className="text-discount text-sm font-bold">{discount}</span>
-        <span className="text-black text-[28px] font-bold">{price}</span>
-      </div>
-      <div className="mb-4">
-        {originalPrice && <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>}
-      </div>
+        {/* Pricing */}
+        <div className="flex items-center gap-3 mb-1">
+          <span className="text-discount text-sm font-bold">{discount}</span>
+          <span className="text-black text-[28px] font-bold">{price}</span>
+        </div>
+        <div className="mb-4">
+          {originalPrice && <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>}
+        </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 w-full max-w-[500px]">
-        <Sheet>
-          <SheetTrigger asChild>
-            <button className="flex-1 bg-[#E4E9FF] hover:bg-[#E4E9FF]/80 text-black px-4 py-4 rounded-md text-sm font-bold transition-colors">
-              VIEW DETAILS
-            </button>
-          </SheetTrigger>
-          <ProductDetailsSheet
+        {/* Action Buttons */}
+        <div className="flex gap-3 w-full max-w-[500px]">
+          <button
+            className="flex-1 bg-[#E4E9FF] hover:bg-[#E4E9FF]/80 text-black px-4 py-4 rounded-md text-sm font-bold transition-colors"
+            onClick={openDialog}
+          >
+            VIEW DETAILS
+          </button>
+          <AddToCartButton
             title={title}
             size={size}
             price={price}
             originalPrice={originalPrice}
-            discountText={discount}
             image={image}
-            benefit={benefit}
-            form={form}
-            description={description}
           />
-        </Sheet>
-        <AddToCartButton
-          title={title}
-          size={size}
-          price={price}
-          originalPrice={originalPrice}
-          image={image}
-        />
+        </div>
       </div>
-    </div>
 
-    {/* Product Image Dialog */}
-    <ProductImageDialog
-      open={dialogOpen}
-      onOpenChange={setDialogOpen}
-      title={title}
-      size={size}
-      price={price}
-      originalPrice={originalPrice}
-      discountText={discount}
-      image={image}
-      images={images}
-      benefit={benefit}
-      form={form}
-      description={description}
-    />
+      {/* Product Details Dialog (reusing ProductImageDialog for details) */}
+      <ProductImageDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title={title}
+        size={size}
+        price={price}
+        originalPrice={originalPrice}
+        discountText={discount}
+        image={image}
+        images={images}
+        benefit={benefit}
+        form={form}
+        description={description}
+      />
     </>
   );
 }

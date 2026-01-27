@@ -131,13 +131,22 @@ export default function Checkout() {
     if (!user) {
       toast({ title: 'Error', description: 'You must be logged in to place an order.' });
       navigate('/login');
-      return;
-    }
-
-    // Validation
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone) {
-      toast({ title: 'Error', description: 'Please fill in all customer information' });
-      return;
+      return (
+        <div className="min-h-screen bg-[#F7F8FA]">
+          <div className="container mx-auto px-4 md:px-6 lg:px-24 py-8">
+            {/* ...existing code... */}
+            <div className="mt-8 flex justify-center">
+              <button
+                className="bg-brand-blue text-white px-6 py-3 rounded-md font-bold hover:bg-brand-blue/90 transition-colors"
+                onClick={() => navigate("/")}
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      // removed stray return
+      );
     }
 
     if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zip || !shippingAddress.country) {

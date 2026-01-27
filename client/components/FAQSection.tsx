@@ -15,11 +15,11 @@ const QuestionIcon = () => (
 export default function FAQSection() {
   const faqs = [
     {
-      question: "What is Cure Mist?",
+      question: "What is CureMist?",
       answer: "CureMist is a 100% Ayurvedic patented first aid wound-healing spray designed for quick, touch-free relief from minor cuts, burns, scratches, shoe bites, nail fungus, ringworm and other everyday skin injuries. Any type of open wounds can be healed using Curemist."
     },
     {
-      question: "How does Cure Mist work?",
+      question: "How does CureMist work?",
       answer: "CureMist forms our patented clean, protective herbal bio degradable film layer over the skin. Its turmeric,onion extracts and active ingredients has anti-Microbial, anti-Fungal and anti-Inflammatory activities and soothes irritation, reduce redness, and support faster wound recovery. Its clove ingredient works as a local anesthetic, helping in reduced burning and pain feeling. Its Brahmi ingredient helps in active cell regeneration and helps reduce scarring."
     },
     {
@@ -39,12 +39,25 @@ export default function FAQSection() {
       answer:"Relatively yes. CureMist is designed with maximum care to be non-burning and soothing, thanks to its Clove ingredient. But the onion and turmeric ingredients are known to cause very mild pain. But rest assured, healing your wounds is our primary objective.",
     },
     {
-      question:"Is CureMist safe for all skin types?",
-      answer:"Yes. CureMist is made using gentle Ayurvedic ingredients and contains no parabens, sulfates, artificial fragrances, making it safe even for sensitive skin. There are some people who can develop allergy to turmeric or herbal ingredients . Take physician advice in such cases.",
-    },
-    {
       question:"What types of wounds can I use CureMist on?",
-      answer:"",
+         answer: (
+        <ul className="list-disc pl-6 space-y-1">
+          <li>Nail Fungus</li>
+          <li>Tinea / Ringworm</li>
+          <li>Foot ulcers</li>
+          <li>Varicose vein ulcers</li>
+          <li>Bed sore ulcers/wounds</li>
+          <li>Cancer treatment Radiation wounds</li>
+          <li>Minor cuts & scratches</li>
+          <li>Shaving cuts</li>
+          <li>Shoe bites</li>
+          <li>Small burns</li>
+          <li>Paper cuts</li>
+          <li>Kitchen injuries</li>
+          <li>Insect bites</li>
+          <li>Redness or skin irritation</li>
+        </ul>
+      ),
     },
     {
       question:"How many times can I apply CureMist in a day?",
@@ -79,8 +92,14 @@ export default function FAQSection() {
       answer:"Yes, but apply CureMist first. Let it dry completely before using any other creams.",
     },
     {
-      question:"How to use Curemist?",
-      answer:""
+      question: "How to use Curemist?",
+      answer: (
+        <ul className="list-disc pl-6 space-y-1">
+          <li>Clean the wound with saline water and dry the wound with cotton swab.</li>
+          <li>Apply curemist from a 4 to 5 cm distance over cuts/burns from one side to other</li>
+          <li>Allow air to dry the applied area. generally takes 30 seconds to 1 minute to dry.</li>
+        </ul>
+      ),
     },
     {
       question:"What should be done if Curemist gets into eyes",
