@@ -73,18 +73,18 @@ export default function ProductCard({ title, size, price, originalPrice, discoun
           </div>
         </div>
 
-        {/* Product Info */}
-        <h3 className="text-xl font-semibold text-black text-center mb-2 leading-snug max-w-[242px]">
-          {title}
-        </h3>
-
-        {/* Pricing */}
-        <div className="flex items-center gap-3 mb-1">
-          <span className="text-discount text-sm font-bold">{discount}</span>
-          <span className="text-black text-[28px] font-bold">{price}</span>
-        </div>
-        <div className="mb-4">
-          {originalPrice && <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>}
+        {/* Product Info and Pricing in Two Columns */}
+        <div className="grid grid-cols-2 w-full max-w-[400px] mb-4 gap-2 items-center">
+          {/* First Column: Title */}
+          <h3 className="text-xl font-semibold text-black leading-snug max-w-[180px] whitespace-normal break-words col-span-1">
+            {title}
+          </h3>
+          {/* Second Column: Discount, Price, Original Price */}
+          <div className="flex flex-col items-end col-span-1">
+            <span className="text-discount text-sm font-bold">{discount}</span>
+            <span className="text-black text-[28px] font-bold leading-none">{price}</span>
+            {originalPrice && <span className="text-gray-text text-lg font-medium line-through">{originalPrice}</span>}
+          </div>
         </div>
 
         {/* Action Buttons */}

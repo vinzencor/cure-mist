@@ -27,7 +27,7 @@ export default function ProductSection() {
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
     },
     {
-      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray Combo Pack (37.5g)",
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray Combo(37.5g)",
       size: "Combo",
       price: "₹418",
       originalPrice: "₹439",
@@ -39,7 +39,7 @@ export default function ProductSection() {
       description: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.",
     },
      {
-      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray Combo Pack 50g",
+      title: "Cure Mist Ayurvedic\nFirst Aid Wound Spray 50g",
       size: "50 gm",
       price: "₹345",
       originalPrice: "₹363",
@@ -66,7 +66,7 @@ export default function ProductSection() {
         </div>
 
         {/* Product Grid */}
-        <div id="product-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-1 md:gap-x-2 lg:gap-x-3 gap-y-6 md:gap-y-12 lg:gap-y-16">
+        <div id="product-cards" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-0 md:gap-x-2 lg:gap-x-0 gap-y-6 md:gap-y-12 lg:gap-y-16">
           {products.map((product, index) => (
             <ProductCard
               key={index}
