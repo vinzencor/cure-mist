@@ -45,15 +45,36 @@
 
 @media (max-width: 600px) {
   .key-features-section {
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
   }
   .feature-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
     padding-left: 2px !important;
     padding-right: 2px !important;
     box-sizing: border-box;
+  }
+  .feature-card {
+    padding: 8px 5px 6px 5px;
+    border-radius: 9px;
+    transition: none;
+    pointer-events: none;
+  }
+  .feature-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .feature-text {
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+  .feature-card:hover {
+    transform: none;
+    box-shadow: 0 4px 16px 0 rgba(40, 43, 112, 0.10), 0 1.5px 6px 0 rgba(255, 209, 71, 0.08);
+  }
+  .hide-mobile {
+    display: none !important;
   }
 }
 

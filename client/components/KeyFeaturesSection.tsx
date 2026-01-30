@@ -23,7 +23,12 @@ const KeyFeaturesSection = () => {
       <h2 className="section-title premium-title">Product Highlights</h2>
       <div className="feature-cards-grid">
         {features.map((feature, index) => (
-          <KeyFeatureCard key={index} icon={feature.icon} text={feature.text} />
+          <KeyFeatureCard
+            key={index}
+            icon={feature.icon}
+            text={feature.text}
+            className={feature.icon === "ages" ? "hide-mobile" : ""}
+          />
         ))}
       </div>
     </section>

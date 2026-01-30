@@ -5,7 +5,7 @@ import { FaCheckCircle, FaHandSparkles, FaLeaf, FaFireAlt, FaUserShield, FaHeart
 import { MdOutlineHealthAndSafety } from 'react-icons/md';
 
 // Functional component that takes in props: icon and text
-const KeyFeatureCard = ({ icon, text }) => {
+const KeyFeatureCard = ({ icon, text, className = "" }) => {
   // Render the correct icon based on the passed "icon" prop
   let IconComponent;
 
@@ -46,7 +46,7 @@ const KeyFeatureCard = ({ icon, text }) => {
   }
 
   return (
-    <div className="feature-card">
+    <div className={`feature-card ${className}`.trim()}>
       <IconComponent className="feature-icon" />
       <p className="feature-text">{text}</p>
     </div>
