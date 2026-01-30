@@ -27,7 +27,7 @@ const KeyFeaturesSection = () => {
             key={index}
             icon={feature.icon}
             text={feature.text}
-            className={feature.icon === "ages" ? "hide-mobile" : ""}
+            className={["antigerm", "turmeric", "ayush", "ages"].includes(feature.icon) ? "hide-mobile" : ""}
           />
         ))}
       </div>
