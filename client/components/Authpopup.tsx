@@ -58,39 +58,48 @@ const AuthPopup = ({ onClose }: { onClose: () => void }) => {
     e.preventDefault();
     setLoading(true);
 
-    if (view === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    try {
+      if (view === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (error) {
-        toast({ title: "Login Failed", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Logged in successfully!" });
-        onClose();
-      }
-    } else if (view === 'register') {
-      if (password !== confirmPassword) {
-        toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: "https://cure-mist.vercel.app/",
+        if (error) {
+          toast({ title: "Login Failed", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Logged in successfully!" });
+          onClose();
         }
-      });
+      } else if (view === 'register') {
+        if (password !== confirmPassword) {
+          toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
 
-      if (error) {
-        toast({ title: "Registration Failed", description: error.message, variant: "destructive" });
-      } else {
-        setRegistrationSuccess(true);
-        toast({ title: "Success", description: "Registration successful! Please confirm your email." });
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: "https://cure-mist.vercel.app/",
+          }
+        });
+
+        if (error) {
+          toast({ title: "Registration Failed", description: error.message, variant: "destructive" });
+        } else {
+          setRegistrationSuccess(true);
+          toast({ title: "Success", description: "Registration successful! Please confirm your email." });
+        }
       }
+    } catch (err: any) {
+      console.error("Auth error:", err);
+      toast({
+        title: "Connection Error",
+        description: "Unable to connect to the server. Please check your internet connection and try again.",
+        variant: "destructive",
+      });
     }
     setLoading(false);
   };

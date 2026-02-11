@@ -28,27 +28,36 @@ export default function Login() {
         e.preventDefault();
         setLoading(true);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        setLoading(false);
-
-        if (error) {
+            if (error) {
+                toast({
+                    title: "Login Failed",
+                    description: error.message,
+                    variant: "destructive",
+                });
+            } else {
+                toast({
+                    title: "Success",
+                    description: "Logged in successfully!",
+                });
+                // Redirect to previous page if available, else home
+                const from = (location.state as any)?.from?.pathname || "/";
+                navigate(from, { replace: true });
+            }
+        } catch (err: any) {
+            console.error("Login error:", err);
             toast({
-                title: "Login Failed",
-                description: error.message,
+                title: "Connection Error",
+                description: "Unable to connect to the server. Please check your internet connection and try again.",
                 variant: "destructive",
             });
-        } else {
-            toast({
-                title: "Success",
-                description: "Logged in successfully!",
-            });
-            // Redirect to previous page if available, else home
-            const from = (location.state as any)?.from?.pathname || "/";
-            navigate(from, { replace: true });
+        } finally {
+            setLoading(false);
         }
     };
 

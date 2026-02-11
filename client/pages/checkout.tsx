@@ -6,6 +6,12 @@ import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 interface CustomerInfo {
   firstName: string;
   lastName: string;
@@ -29,6 +35,7 @@ export default function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'razorpay'>('razorpay');
 
   // Customer Information
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
@@ -122,31 +129,224 @@ export default function Checkout() {
   const couponDiscount = appliedCoupon?.discount || 0;
 
   const totalPrice = Math.max(0, subtotal - couponDiscount);
-  
+
   // GST calculation (18% of subtotal before coupon discount)
   const gstAmount = subtotal * 0.18;
+
+  // Save address and order to Supabase
+  const saveOrderToSupabase = async (paymentStatus: string, razorpayPaymentId?: string) => {
+    if (!user) {
+      console.error('No user found when saving order');
+      return null;
+    }
+
+    try {
+      // 1. Save Address if not selected from saved and limit < 3
+      if (!selectedAddressId && savedAddresses.length < 3) {
+        const { data: existingAddresses } = await supabase
+          .from('user_addresses')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('street', shippingAddress.street)
+          .eq('city', shippingAddress.city)
+          .eq('state', shippingAddress.state)
+          .eq('zip', shippingAddress.zip)
+          .eq('country', shippingAddress.country);
+
+        if (!existingAddresses || existingAddresses.length === 0) {
+          await supabase.from('user_addresses').insert({
+            user_id: user.id,
+            ...shippingAddress
+          });
+        }
+      }
+
+      // 2. Create Order
+      const orderData: any = {
+        user_id: user.id,
+        customer_info: customerInfo,
+        shipping_address: shippingAddress,
+        billing_address: sameAsBilling ? shippingAddress : billingAddress,
+        subtotal,
+        shipping_fee: shippingFee,
+        gst_amount: gstAmount,
+        total_price: totalPrice,
+        payment_status: paymentStatus,
+        payment_method: paymentMethod,
+        order_status: 'processing'
+      };
+
+      if (razorpayPaymentId) {
+        orderData.razorpay_payment_id = razorpayPaymentId;
+      }
+
+      console.log('Creating order with data:', orderData);
+
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+        .single();
+
+      if (orderError) {
+        console.error('Order creation error:', orderError);
+        throw new Error(`Failed to create order: ${orderError.message}`);
+      }
+
+      console.log('Order created successfully:', order);
+
+      // 3. Create Order Items
+      const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: null,
+        title: item.title,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image
+      }));
+
+      console.log('Creating order items:', orderItems);
+
+      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+      if (itemsError) {
+        console.error('Order items creation error:', itemsError);
+        throw new Error(`Failed to create order items: ${itemsError.message}`);
+      }
+
+      // 4. Update Profile Info
+      const { error: profileError } = await supabase.from('profiles').upsert({
+        id: user.id,
+        first_name: customerInfo.firstName,
+        last_name: customerInfo.lastName,
+        phone: customerInfo.phone,
+        updated_at: new Date()
+      });
+
+      if (profileError) console.error("Error syncing profile:", profileError);
+
+      await clearCart();
+      console.log('Order saved successfully, cart cleared');
+      return order;
+    } catch (error) {
+      console.error('Error in saveOrderToSupabase:', error);
+      throw error;
+    }
+  };
+
+  // Razorpay payment handler
+  const initiateRazorpayPayment = async () => {
+    try {
+      console.log('Creating Razorpay order with amount:', totalPrice);
+
+      // 1. Create Razorpay order on server
+      const response = await fetch('/api/create-razorpay-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalPrice,
+          currency: 'INR',
+          receipt: `order_${Date.now()}`,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Razorpay order response:', data);
+
+      if (!response.ok) {
+        console.error('Razorpay order creation failed:', data);
+        throw new Error(data.error || 'Failed to create payment order');
+      }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: data.key,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Curemist',
+        description: 'Ayurvedic Wound Spray Purchase',
+        order_id: data.orderId,
+        handler: async (response: any) => {
+          try {
+            console.log('Payment successful, verifying...', response);
+
+            // 3. Verify payment on server
+            const verifyRes = await fetch('/api/verify-razorpay-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            console.log('Verification response:', verifyData);
+
+            if (verifyData.verified) {
+              // 4. Save order to Supabase
+              console.log('Saving order to database...');
+              const order = await saveOrderToSupabase('paid', response.razorpay_payment_id);
+
+              if (order) {
+                toast({ title: 'Payment Successful! 🎉', description: 'Your order has been placed successfully.' });
+                setTimeout(() => navigate('/profile'), 2000);
+              } else {
+                throw new Error('Failed to save order to database');
+              }
+            } else {
+              toast({ title: 'Payment Verification Failed', description: 'Please contact support with payment ID: ' + response.razorpay_payment_id, variant: 'destructive' });
+            }
+          } catch (err: any) {
+            console.error('Payment verification error:', err);
+            toast({ title: 'Error', description: err.message || 'Failed to process payment', variant: 'destructive' });
+          } finally {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: `${customerInfo.firstName} ${customerInfo.lastName}`,
+          email: customerInfo.email,
+          contact: customerInfo.phone,
+        },
+        notes: {
+          address: `${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} - ${shippingAddress.zip}`,
+        },
+        theme: {
+          color: '#4A0E4E',
+        },
+        modal: {
+          ondismiss: () => {
+            setLoading(false);
+            toast({ title: 'Payment Cancelled', description: 'You can try again anytime.', variant: 'destructive' });
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', (response: any) => {
+        setLoading(false);
+        console.error('Payment failed:', response);
+        toast({
+          title: 'Payment Failed',
+          description: response.error?.description || 'Something went wrong. Please try again.',
+          variant: 'destructive',
+        });
+      });
+      rzp.open();
+    } catch (err: any) {
+      setLoading(false);
+      console.error('Razorpay error:', err);
+      toast({ title: 'Payment Error', description: err.message || 'Failed to initiate payment', variant: 'destructive' });
+    }
+  };
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       toast({ title: 'Error', description: 'You must be logged in to place an order.' });
       navigate('/login');
-      return (
-        <div className="min-h-screen bg-[#F7F8FA]">
-          <div className="container mx-auto px-4 md:px-6 lg:px-24 py-8">
-            {/* ...existing code... */}
-            <div className="mt-8 flex justify-center">
-              <button
-                className="bg-brand-blue text-white px-6 py-3 rounded-md font-bold hover:bg-brand-blue/90 transition-colors"
-                onClick={() => navigate("/")}
-              >
-                Back to Home
-              </button>
-            </div>
-          </div>
-        </div>
-      // removed stray return
-      );
+      return;
     }
 
     if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zip || !shippingAddress.country) {
@@ -163,79 +363,27 @@ export default function Checkout() {
 
     setLoading(true);
 
-    try {
-      // 1. Save Address if not selected from saved and limit < 3
-      if (!selectedAddressId && savedAddresses.length < 3) {
-        // Check if this exact address already exists to prevent duplicates
-        const { data: existingAddresses } = await supabase
-          .from('user_addresses')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('street', shippingAddress.street)
-          .eq('city', shippingAddress.city)
-          .eq('state', shippingAddress.state)
-          .eq('zip', shippingAddress.zip)
-          .eq('country', shippingAddress.country);
+    if (paymentMethod === 'razorpay') {
+      // Open Razorpay payment modal
+      await initiateRazorpayPayment();
+    } else {
+      // COD flow
+      try {
+        console.log('Processing COD order...');
+        const order = await saveOrderToSupabase('cod_pending');
 
-        // Only insert if address doesn't already exist
-        if (!existingAddresses || existingAddresses.length === 0) {
-          await supabase.from('user_addresses').insert({
-            user_id: user.id,
-            ...shippingAddress
-          });
+        if (order) {
+          toast({ title: 'Success', description: 'Order placed successfully!' });
+          setTimeout(() => navigate('/profile'), 2000);
+        } else {
+          throw new Error('Failed to create order');
         }
+      } catch (err: any) {
+        console.error('COD order error:', err);
+        toast({ title: 'Order Failed', description: err.message || 'Failed to place order', variant: 'destructive' });
+      } finally {
+        setLoading(false);
       }
-
-      // 2. Create Order
-      const { data: order, error: orderError } = await supabase.from('orders').insert({
-        user_id: user.id,
-        customer_info: customerInfo,
-        shipping_address: shippingAddress,
-        billing_address: sameAsBilling ? shippingAddress : billingAddress,
-        subtotal,
-        shipping_fee: shippingFee,
-        gst_amount: gstAmount,
-        total_price: totalPrice,
-        payment_status: 'paid', // Simulating successful payment
-        order_status: 'processing'
-      }).select().single();
-
-      if (orderError) throw orderError;
-
-      // 4. Create Order Items
-      const orderItems = items.map(item => ({
-        order_id: order.id,
-        product_id: null,
-        title: item.title,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image
-      }));
-
-      const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
-      if (itemsError) throw itemsError;
-
-      // 5. Update Profile Info - SYNC WITH CHECKOUT
-      // Always update profile with latest checkout info to ensure persistence
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: user.id,
-        first_name: customerInfo.firstName,
-        last_name: customerInfo.lastName,
-        phone: customerInfo.phone,
-        updated_at: new Date()
-      });
-
-      if (profileError) console.error("Error syncing profile:", profileError);
-
-      await clearCart(); // Clears DB cart too
-
-      toast({ title: 'Success', description: 'Order placed successfully!' });
-      setTimeout(() => navigate('/profile'), 2000);
-
-    } catch (err: any) {
-      toast({ title: 'Order Failed', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -524,27 +672,91 @@ export default function Checkout() {
                 )}
               </section>
 
-              {/* Payment Information */}
+              {/* Payment Method Selection */}
               <section className="bg-white rounded-lg border p-6">
                 <h2 className="text-xl font-bold text-curemist-purple mb-4">Payment Method</h2>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-green-100 p-3 rounded-full">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                <div className="space-y-3">
+                  {/* Pay Online - Razorpay */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === 'razorpay'
+                        ? 'border-[#4A0E4E] bg-purple-50 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    onClick={() => setPaymentMethod('razorpay')}
+                  >
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        checked={paymentMethod === 'razorpay'}
+                        readOnly
+                        className="w-5 h-5 text-[#4A0E4E] focus:ring-[#4A0E4E]"
+                      />
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="bg-blue-100 p-2.5 rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">Pay Online</h3>
+                          <p className="text-xs text-gray-500 mt-0.5">UPI, Cards, Net Banking, Wallets</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <img src="https://cdn.razorpay.com/static/assets/logo/payment/upi.svg" alt="UPI" className="h-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        <img src="https://cdn.razorpay.com/static/assets/logo/payment/visa.svg" alt="Visa" className="h-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        <img src="https://cdn.razorpay.com/static/assets/logo/payment/mastercard.svg" alt="Mastercard" className="h-5" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-900">Cash on Delivery (COD)</h3>
-                      <p className="text-sm text-gray-600 mt-1">Pay with cash when your order is delivered</p>
-                    </div>
+                    {paymentMethod === 'razorpay' && (
+                      <div className="mt-3 pt-3 border-t border-purple-200">
+                        <p className="text-xs text-gray-600">
+                          ✔ Secure payment processed by Razorpay<br />
+                          ✔ UPI, Debit/Credit Cards, Net Banking & Wallets accepted<br />
+                          ✔ Instant order confirmation
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-4 pt-4 border-t border-green-200">
-                    <p className="text-xs text-gray-600">
-                      ✔ No advance payment required<br/>
-                      ✔ Pay only when you receive your order<br/>
-                      ✔ Verify product quality before payment
-                    </p>
+
+                  {/* Cash on Delivery */}
+                  <div
+                    className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === 'cod'
+                        ? 'border-green-500 bg-green-50 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    onClick={() => setPaymentMethod('cod')}
+                  >
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        checked={paymentMethod === 'cod'}
+                        readOnly
+                        className="w-5 h-5 text-green-600 focus:ring-green-500"
+                      />
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="bg-green-100 p-2.5 rounded-full">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900">Cash on Delivery (COD)</h3>
+                          <p className="text-xs text-gray-500 mt-0.5">Pay when your order arrives</p>
+                        </div>
+                      </div>
+                    </div>
+                    {paymentMethod === 'cod' && (
+                      <div className="mt-3 pt-3 border-t border-green-200">
+                        <p className="text-xs text-gray-600">
+                          ✔ No advance payment required<br />
+                          ✔ Pay only when you receive your order<br />
+                          ✔ Verify product quality before payment
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
@@ -553,9 +765,16 @@ export default function Checkout() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-brand-yellow text-brand-blue font-bold py-4 rounded-lg text-lg hover:bg-[#816306] transition-colors disabled:opacity-50 shadow-md"
+                className={`w-full font-bold py-4 rounded-lg text-lg transition-colors disabled:opacity-50 shadow-md ${paymentMethod === 'razorpay'
+                    ? 'bg-[#4A0E4E] text-white hover:bg-[#3a0b3e]'
+                    : 'bg-brand-yellow text-brand-blue hover:bg-[#816306]'
+                  }`}
               >
-                {loading ? "Placing Order..." : "Place Order"}
+                {loading
+                  ? 'Processing...'
+                  : paymentMethod === 'razorpay'
+                    ? `Pay ₹${totalPrice} Now`
+                    : 'Place Order (COD)'}
               </button>
             </form>
           </div>
@@ -611,6 +830,16 @@ export default function Checkout() {
             </div>
 
             <p className="text-green-600 text-xs mt-2 text-center">✔ Free shipping on all orders!</p>
+
+            {/* Payment method badge */}
+            <div className="mt-3 text-center">
+              <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full ${paymentMethod === 'razorpay'
+                  ? 'bg-purple-100 text-purple-800'
+                  : 'bg-green-100 text-green-800'
+                }`}>
+                {paymentMethod === 'razorpay' ? '💳 Paying Online' : '💵 Cash on Delivery'}
+              </span>
+            </div>
           </aside>
         </div>
       </div>
