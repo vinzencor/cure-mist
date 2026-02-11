@@ -1,12 +1,20 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 
-const RAZORPAY_KEY_ID = "rzp_live_SCoOWhO22Q4yKo";
-const RAZORPAY_KEY_SECRET = "Geg9KY61FhTuvOKd7qLFRgfu";
+// Load Razorpay credentials from environment variables
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
 
 // POST /api/create-razorpay-order
 export async function createRazorpayOrder(req: Request, res: Response) {
     try {
+        // Validate credentials are loaded
+        if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+            console.error("Razorpay credentials not configured");
+            res.status(500).json({ error: "Payment gateway not configured" });
+            return;
+        }
+
         const { amount, currency = "INR", receipt } = req.body;
 
         if (!amount || amount <= 0) {
@@ -32,7 +40,17 @@ export async function createRazorpayOrder(req: Request, res: Response) {
             }),
         });
 
-        const order = await response.json();
+        // Handle empty or malformed responses
+        const responseText = await response.text();
+        let order;
+
+        try {
+            order = responseText ? JSON.parse(responseText) : {};
+        } catch (parseError) {
+            console.error("Failed to parse Razorpay response:", responseText);
+            res.status(500).json({ error: "Invalid response from payment gateway" });
+            return;
+        }
 
         if (!response.ok) {
             console.error("Razorpay order creation failed:", order);
@@ -55,6 +73,13 @@ export async function createRazorpayOrder(req: Request, res: Response) {
 // POST /api/verify-razorpay-payment
 export async function verifyRazorpayPayment(req: Request, res: Response) {
     try {
+        // Validate credentials are loaded
+        if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+            console.error("Razorpay credentials not configured");
+            res.status(500).json({ verified: false, error: "Payment gateway not configured" });
+            return;
+        }
+
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
