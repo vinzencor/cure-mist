@@ -168,6 +168,9 @@ export default function Checkout() {
         shipping_address: shippingAddress,
         billing_address: sameAsBilling ? shippingAddress : billingAddress,
         subtotal,
+        mrp_total: mrpTotal,
+        discount_amount: discountAmount,
+        coupon_discount: couponDiscount,
         shipping_fee: shippingFee,
         gst_amount: gstAmount,
         total_price: totalPrice,
@@ -679,8 +682,8 @@ export default function Checkout() {
                   {/* Pay Online - Razorpay */}
                   <div
                     className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === 'razorpay'
-                        ? 'border-[#4A0E4E] bg-purple-50 shadow-sm'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-[#4A0E4E] bg-purple-50 shadow-sm'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                     onClick={() => setPaymentMethod('razorpay')}
                   >
@@ -723,8 +726,8 @@ export default function Checkout() {
                   {/* Cash on Delivery */}
                   <div
                     className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${paymentMethod === 'cod'
-                        ? 'border-green-500 bg-green-50 shadow-sm'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-green-500 bg-green-50 shadow-sm'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                     onClick={() => setPaymentMethod('cod')}
                   >
@@ -766,8 +769,8 @@ export default function Checkout() {
                 type="submit"
                 disabled={loading}
                 className={`w-full font-bold py-4 rounded-lg text-lg transition-colors disabled:opacity-50 shadow-md ${paymentMethod === 'razorpay'
-                    ? 'bg-[#4A0E4E] text-white hover:bg-[#3a0b3e]'
-                    : 'bg-brand-yellow text-brand-blue hover:bg-[#816306]'
+                  ? 'bg-[#4A0E4E] text-white hover:bg-[#3a0b3e]'
+                  : 'bg-brand-yellow text-brand-blue hover:bg-[#816306]'
                   }`}
               >
                 {loading
@@ -834,8 +837,8 @@ export default function Checkout() {
             {/* Payment method badge */}
             <div className="mt-3 text-center">
               <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full ${paymentMethod === 'razorpay'
-                  ? 'bg-purple-100 text-purple-800'
-                  : 'bg-green-100 text-green-800'
+                ? 'bg-purple-100 text-purple-800'
+                : 'bg-green-100 text-green-800'
                 }`}>
                 {paymentMethod === 'razorpay' ? '💳 Paying Online' : '💵 Cash on Delivery'}
               </span>
